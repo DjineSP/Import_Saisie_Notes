@@ -1,0 +1,228 @@
+﻿/* Styles généraux */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f6f6;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.profs-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.contain {
+    flex-grow: 1; /* Permet au contenu de s'étendre */
+    display: flex;
+    flex-direction: column;
+    padding-top: 60px; /* Ajustez en fonction de la hauteur de la navbar */
+}
+
+.content {
+    flex-grow: 1; /* Prend tout l’espace disponible */
+}
+
+
+/* Barre supérieure */
+.top-row {
+    background: #003366; /* Bleu foncé */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+    .top-row h1 {
+        font-size: 20px;
+        font-weight: bold;
+        color: #FFD700; /* Doré */
+        margin: 0;
+    }
+
+.logo {
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+/* Liens et boutons */
+.top-row a,
+.top-row button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.3s;
+    text-decoration: none;
+    margin-left: 10px;
+}
+
+    .top-row a:hover,
+    .top-row button:hover {
+        color: #FFD700; /* Doré */
+    }
+
+/* Contenu principal */
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+    .content.with-sidebar {
+        margin-left: 240px; /* Laisser de l'espace pour la barre latérale */
+    }
+
+    .content.without-sidebar {
+        margin-left: 0;
+    }
+
+/* Barre latérale */
+.sidebar {
+    background: #003366;
+    color: white;
+    width: 240px;
+    height: 100vh;
+    position: fixed;
+    top: 70px;
+    left: 0;
+    transition: left 0.3s ease-in-out;
+    z-index: 999; /* Assurer que la sidebar soit au-dessus du contenu */
+}
+
+    .sidebar.inactive {
+        left: -240px; /* Cache la sidebar */
+    }
+
+    .sidebar .menu {
+        padding: 40px;
+        padding-top: 100px;
+    }
+
+        .sidebar .menu ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar .menu li {
+            margin: 15px 0;
+        }
+
+            .sidebar .menu li a {
+                color: white;
+                text-decoration: none;
+                font-size: 16px;
+            }
+
+                .sidebar .menu li a:hover {
+                    color: #FFD700; /* Doré */
+                }
+
+/* Bouton pour ouvrir/fermer la barre latérale */
+.btn-toggle-sidebar {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    background: #003366;
+    color: white;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1000;
+}
+
+.footer {
+    text-align: center;
+    padding: 15px;
+    background-color: #003366;
+    position: relative;
+    width: 100%;
+    margin-top: auto; /* Garde le footer en bas */
+    border-top: 1px solid #ddd;
+}
+
+    .footer p {
+        color: #FFD700;
+    }
+
+
+/* Modal */
+.modal {
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    max-width: 90%;
+}
+
+.modal-header {
+    font-size: 18px;
+    font-weight: bold;
+    color: #003366;
+    border-bottom: 2px solid #FFD700;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+/* Pied de page d'erreur */
+#blazor-error-ui {
+    background: #c0392b;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    display: none;
+}
+
+    #blazor-error-ui a {
+        color: #FFD700;
+        text-decoration: underline;
+    }
+
+    #blazor-error-ui .dismiss {
+        float: right;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+/* Barre de navigation fixe */
+.fixed-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    z-index: 1000;
+}
+
+
+/* Supprimer la duplication de la bibliothèque FontAwesome */
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" >

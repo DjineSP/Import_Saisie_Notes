@@ -1,0 +1,48 @@
+﻿@namespace StudLayout
+@inherits LayoutComponentBase
+
+
+<div class="profs-layout">
+    <main>
+        <div class="top-row px-4 fixed-nav">
+            <img src="logo.png" alt="Logo" class="logo me-2" style="width: 50px; height: 50px;" />
+            <h1 class="h4 me-auto">Import et Saisie Note</h1>
+            <button class="btn btn-link" >
+                <i class="fas fa-home"></i> Accueil
+            </button>
+            <button class="btn btn-link" >
+                <i class="fas fa-user"></i> Mon Compte
+            </button>
+            <button class="btn btn-link" >
+                <i class="fas fa-bell"></i> Notifications
+            </button>
+            <button class="btn btn-link" >
+                <i class="fas fa-sign-out-alt"></i> Déconnexion
+            </button>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 Université de Yaoundé I - Tous droits réservés.</p>
+        <div class="social-icons">
+            <a href="https://facebook.com" target="_blank" class="text-light mx-2">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="https://twitter.com" target="_blank" class="text-light mx-2">
+                <i class="fab fa-twitter"></i>
+            </a>
+            <a href="https://instagram.com" target="_blank" class="text-light mx-2">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://linkedin.com" target="_blank" class="text-light mx-2">
+                <i class="fab fa-linkedin"></i>
+            </a>
+        </div>
+    </footer>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</div>

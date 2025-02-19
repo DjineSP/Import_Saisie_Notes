@@ -1,0 +1,95 @@
+﻿@using Importation.Components.Modals
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager Navigation
+
+@inherits LayoutComponentBase
+
+<div class="page">
+    <main>
+        <div class="top-row px-4 fixed-nav">
+            <img src="logo.png" alt="Logo" class="logo me-2" style="width: 50px; height: 50px;" />
+            <h1 class="h4 me-auto">@localizer["AppName"]</h1>
+            <button class="btn btn-link" @onclick="NavigateToHome">
+                <i class="fas fa-home"></i> @localizer["Home"]
+            </button>
+            <button class="btn btn-link" @onclick="() => showLoginModal = true">
+                <i class="fas fa-sign-in-alt"></i> @localizer["Login"]
+            </button>
+            <button class="btn btn-link" @onclick="() => showSignupModal = true">
+                <i class="fas fa-user-plus"></i> @localizer["Sign Up"]
+            </button>
+            <button class="btn btn-link" @onclick="() => showLanguageModal = true">
+                <i class="fas fa-language"></i> @localizer["Language"]
+            </button>
+            <button class="btn btn-link" @onclick="NavigateToApropos">
+                <i class="fas fa-info-circle"></i> @localizer["About"]
+            </button>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>@localizer["Copyright"]</p>
+        <div class="social-icons">
+            <a href="https://facebook.com" target="_blank" class="text-light mx-2">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="https://twitter.com" target="_blank" class="text-light mx-2">
+                <i class="fab fa-twitter"></i>
+            </a>
+            <a href="https://instagram.com" target="_blank" class="text-light mx-2">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://linkedin.com" target="_blank" class="text-light mx-2">
+                <i class="fab fa-linkedin"></i>
+            </a>
+        </div>
+    </footer>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</div>
+
+<LoginModal Visible="showLoginModal" OnClose="CloseLoginModal" OnSignUp="ShowSignupModal" />
+<SignupModal Visible="showSignupModal" OnClose="CloseSignupModal" OnExistingAccount="ShowLoginModal" />
+<LanguageModal Visible="showLanguageModal" OnClose="CloseLanguageModal" />
+
+<div id="blazor-error-ui" data-nosnippet>
+    Une erreur non gérée s'est produite.
+    <a href="." class="reload">Recharger</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+@code {
+    private bool showLoginModal;
+    private bool showSignupModal;
+    private bool showLanguageModal;
+
+    private void CloseLoginModal() => showLoginModal = false;
+    private void CloseSignupModal() => showSignupModal = false;
+    private void CloseLanguageModal() => showLanguageModal = false;
+
+    private void ShowSignupModal()
+    {
+        showLoginModal = false; // Ferme le modal de connexion
+        showSignupModal = true; // Ouvre le modal d'inscription
+    }
+
+    private void ShowLoginModal()
+    {
+        showSignupModal = false; // Ferme le modal d'inscription
+        showLoginModal = true; // Ouvre le modal de connexion
+    }
+
+    private void NavigateToApropos()
+    {
+        Navigation.NavigateTo("/apropos");
+    }
+
+    private void NavigateToHome()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

@@ -1,0 +1,79 @@
+﻿/* Style général */
+body {
+    font-family: Arial, sans-serif;
+    background-color: beige;
+    color: #002147;
+    margin: 0;
+    padding-top: 70px; /* Ajoute un espace pour éviter que le contenu soit caché par la navbar */
+}
+
+/* Conteneur principal */
+.layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Contenu */
+.content {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+}
+
+/* Titre principal */
+.title-primary {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #003366;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Sous-titre */
+.subtitle {
+    font-size: 1.2rem;
+    color: #5a5a5a;
+    text-align: center;
+}
+
+/* Style des cartes */
+.card-custom {
+    background-color: #fff;
+    border: 2px solid #FFD700;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+    .card-custom:hover {
+        transform: translateY(-5px);
+    }
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #003366;
+    margin-bottom: 10px;
+}
+
+.card-description {
+    font-size: 1rem;
+    color: #5a5a5a;
+}
+
+/* Espacement */
+.mt-5 {
+    margin-top: 50px;
+}
+
+.mt-4 {
+    margin-top: 40px;
+}
+
+.mb-4 {
+    margin-bottom: 30px;
+}

@@ -1,0 +1,132 @@
+﻿@page "/notes"
+@using OfficeOpenXml
+
+<h3>Liste des Notes</h3>
+
+<InputFile OnChange="UploadFile" class="form-control" accept=".xls,.xlsx" />
+
+@if (isLoading)
+{
+    <p>Chargement des notes...</p>
+}
+else if (!string.IsNullOrEmpty(errorMessage))
+{
+    <p class="text-danger">@errorMessage</p>
+}
+else if (notes == null)
+{
+    <p>Cliquez sur le bouton pour charger les notes.</p>
+}
+else if (notes.Count == 0)
+{
+    <p class="text-warning">Aucune note trouvée.</p>
+}
+else
+{
+    <h3 class="table-title">Liste des Notes</h3>
+
+    <table class="professional-table mt-3">
+        <thead>
+            <tr>
+                <th class="table-header">No</th>
+                <th class="table-header">Matricule</th>
+                <th class="table-header">Nom & Prénom</th>
+                <th class="table-header">Note</th>
+                <th class="table-header">Observation</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var note in notes)
+            {
+                <tr>
+                    <td class="table-data">@note.Index</td>
+                    <td class="table-data">@note.Matricule</td>
+                    <td class="table-data">@note.NomPrenom</td>
+                    <td class="table-data">@note.Note</td>
+                    <td class="table-data">@note.Observation</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<button class="btn btn-primary" @onclick="LoadNotes">Charger</button>
+
+@code {
+    private List<EtudiantNote> notes;
+    private bool isLoading = false;
+    private string errorMessage = "";
+
+    public class EtudiantNote
+    {
+        public int Index { get; set; }
+        public string Matricule { get; set; }
+        public string NomPrenom { get; set; }
+        public double Note { get; set; }
+        public string Observation { get; set; }
+    }
+
+    private IBrowserFile selectedFile;
+
+    private async Task UploadFile(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+
+    private List<EtudiantNote> ReadExcel(Stream stream)
+    {
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        var notesList = new List<EtudiantNote>();
+        using var package = new OfficeOpenXml.ExcelPackage(stream);
+        var worksheet = package.Workbook.Worksheets[0];
+        int rowCount = worksheet.Dimension.Rows;
+
+        Console.WriteLine($"Lecture du fichier Excel avec {rowCount} lignes.");
+
+        for (int row = 2; row <= rowCount; row++) // Ignorer la première ligne (en-têtes)
+        {
+            notesList.Add(new EtudiantNote
+                {
+                    Index = row - 1,
+                    Matricule = worksheet.Cells[row, 2].Text.Trim(),
+                    NomPrenom = worksheet.Cells[row, 3].Text.Trim(),
+                    Note = double.TryParse(worksheet.Cells[row, 4].Text, out double note) ? note : 0,
+                    Observation = worksheet.Cells[row, 5].Text.Trim()
+                });
+        }
+
+        return notesList;
+    }
+
+    private async void LoadNotes()
+    {
+        var file = selectedFile;
+        if (file != null)
+        {
+            isLoading = true;
+            errorMessage = "";
+            notes = new List<EtudiantNote>();
+            StateHasChanged(); // Mettre à jour l'interface pour afficher le message de chargement
+
+            try
+            {
+                using var stream = file.OpenReadStream(10 * 1024 * 1024); // Limite de 10MB
+                using var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+                memoryStream.Position = 0;
+                notes = ReadExcel(memoryStream);
+                Console.WriteLine($"Fichier téléchargé et {notes.Count} notes lues.");
+            }
+            catch (Exception ex)
+            {
+                errorMessage = $"Erreur lors de la lecture du fichier: {ex.Message}";
+                Console.WriteLine($"Erreur lors de la lecture du fichier: {ex.Message}");
+            }
+            finally
+            {
+                isLoading = false;
+                StateHasChanged(); // Mettre à jour l'interface après le chargement
+            }
+        }
+    }
+}

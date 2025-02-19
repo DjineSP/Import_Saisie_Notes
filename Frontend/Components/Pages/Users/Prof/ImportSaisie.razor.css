@@ -1,0 +1,79 @@
+﻿/* Style pour uniformiser la taille des sélecteurs */
+.form-group select {
+    min-width: 120px;
+    width: 100%; /* Prend toute la largeur de la div */
+    height: 38px; /* Hauteur standard */
+    text-align: center;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.table-title {
+    background-color: #003366;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.bg-light {
+    background-color: #e3f2fd !important;
+    border-radius: 5px;
+    padding: 15px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background-color: #003366;
+    border-color: #003366;
+}
+
+    .btn-primary:hover {
+        background-color: #00509e;
+        border-color: #00509e;
+    }
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-danger {
+    background-color: #d9534f;
+    border-color: #d9534f;
+}
+
+.professional-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+    .professional-table th, .professional-table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .professional-table th {
+        background-color: #003366;
+        color: white;
+    }
+
+.action-button {
+    margin: 2px;
+}
+
+.form-control {
+    border: 1px solid #003366;
+    border-radius: 5px;
+}
+
+label {
+    font-weight: bold;
+    color: #003366;
+}

@@ -1,0 +1,519 @@
+﻿@page "/view-prof"
+@using ProfLayout
+@layout ProfLayout
+@using Frontend.Services
+@inject AuthService AuthService
+@using OfficeOpenXml;
+@using System.Diagnostics
+@inject HttpClient Http
+
+
+
+@inject IJSRuntime JS
+
+
+<div @onmousemove="OnMouseMove">
+
+	@if (isValid)
+	{
+		<div>
+			<h3 class="table-title">Options</h3>
+			<div class="d-flex justify-content-between align-items-center bg-light p-3 mb-3">
+				<div class="form-group mx-2">
+					<label for="annee">Année :</label>
+					<select id="annee" class="form-control" @bind="SelectedAnnee" disabled="@((!Annees.Any())||isLocked)">
+						@foreach (var annee in Annees)
+						{
+							<option value="@annee">@annee</option>
+						}
+					</select>
+				</div>
+
+				<div class="form-group mx-2">
+					<label for="classe">Classe :</label>
+					<select id="classe" class="form-control" @onchange="OnClasseChanged" disabled="@((!Classes.Any())||isLocked)">
+						@foreach (var classe in Classes)
+						{
+							<option value="@classe">@classe</option>
+						}
+					</select>
+				</div>
+
+				<div class="form-group mx-2">
+					<label for="semestre">Semestre :</label>
+					<select id="semestre" class="form-control" @onchange="OnSemestreChanged" disabled="@((!Semestres.Any())||isLocked)">
+						@foreach (var semestre in Semestres)
+						{
+							<option value="@semestre">@semestre</option>
+						}
+					</select>
+				</div>
+
+				<div class="form-group mx-2">
+					<label for="ue">UE :</label>
+					<select id="ue" class="form-control" @onchange="OnUEChanged" disabled="@((!UEs.Any())||isLocked)">
+						@foreach (var ue in UEs)
+						{
+							<option value="@ue">@ue</option>
+						}
+					</select>
+				</div>
+
+
+				<div class="form-group mx-2">
+					<label for="evaluation">Évaluation :</label>
+					<select id="evaluation" class="form-control" @onchange="OnEvaluationChange" disabled="@((!Evaluations.Any())||isLocked)">
+						@foreach (var eval in Evaluations)
+						{
+							<option value="@eval">@eval</option>
+						}
+					</select>
+				</div>
+
+				<div class="form-group mx-2">
+					<label for="echelle">Échelle :</label>
+					<select id="echelle" class="form-control" @bind="SelectedEchelle" disabled="true">
+						<option value="@Echelles">@Echelles</option>
+					</select>
+				</div>
+			</div>
+
+			<!-- Bouton Verrouiller / Déverrouiller -->
+			<button type="button" class="btn btn-primary mb-3" @onclick="ToggleLockState">@lockButtonText</button>
+			@if (isLoading)
+			{
+				<p>Chargement des notes...</p>
+			}
+			else if (!string.IsNullOrEmpty(errorMessage))
+			{
+				<p class="text-danger">@errorMessage</p>
+			}
+			else if (notes == null)
+			{
+				<p>Cliquez sur le bouton pour charger les notes.</p>
+			}
+			else if (notes.Count == 0)
+			{
+				<p class="text-warning">Aucune note trouvée.</p>
+			}
+			else
+			{
+				@if (SelectedEvaluation == "SN")
+				{
+					<h3 class="table-title">Liste des Notes avec anonymats</h3>
+				}
+				else
+				{
+					<h3 class="table-title">Liste des Notes sans anonymats</h3>
+				}
+
+				<table class="professional-table mt-3">
+					<thead>
+						<tr>
+							<th class="table-header">No</th>
+							@if (SelectedEvaluation == "SN")
+							{
+								<th class="table-header">Numéro Anonymat</th>
+							}
+							else
+							{
+								<th class="table-header">Matricule</th>
+								<th class="table-header">Nom & Prénom</th>
+							}
+							<th class="table-header">Note</th>
+							<th class="table-header">Observation</th>
+						</tr>
+					</thead>
+					<tbody>
+						@{
+							int index = 1;
+						}
+						@foreach (var note in notes)
+						{
+							<tr>
+								<td class="table-data">@index</td>
+								@if (SelectedEvaluation == "SN")
+								{
+									<td class="table-data">@note.NumAnonymat</td>
+								}
+								else
+								{
+									<td class="table-data">@note.Matricule</td>
+									<td class="table-data">@note.NomPrenom</td>
+								}
+								<td class="table-data">@note.Note</td>
+								<td class="table-data">@note.Observation</td>
+							</tr>
+							index++;
+						}
+					</tbody>
+				</table>
+			}
+			<!-- Bouton de validation -->
+			<button class="btn btn-success mt-3" @onclick="ExportToExcel">Print</button>
+		</div>
+	}
+</div>
+
+
+@code {
+
+	private bool isValid = false;
+	private bool isLocked = false;
+	private string lockButtonText = "Verrouiller";
+	private bool hasRendered = false;
+
+	[Parameter] public EventCallback<string> OnSelectionChanged { get; set; }
+
+	private List<string> Annees = new();
+	private List<string> Semestres = new();
+	private List<string> Classes = new();
+	private List<string> UEs = new();
+	private List<string> Evaluations = new();
+	private int Echelles;
+
+	private string? SelectedAnnee = "";
+	private string? SelectedSemestre = "";
+	private string? SelectedClasse = "";
+	private string? SelectedUE = "";
+	private string? SelectedEvaluation = "";
+	private int SelectedEchelle ;
+
+	private string? matricule;
+	private string? nomPrenom;
+	private string? numAnonymat;
+	private double note;
+	private string? observation;
+	private List<Dictionary<string, object>> notesList = new();
+	//private List<EtudiantNote> notesList;
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadData();
+
+	}
+
+	private async Task CheckToken()
+	{
+		isValid = await AuthService.ValidateTokenAsync();
+	}
+
+	private async Task OnMouseMove(MouseEventArgs e)
+	{
+		if (hasRendered) // S'assure que le rendu initial est terminé
+		{
+			await CheckToken();
+		}
+	}
+
+	private async Task LoadData()
+	{
+		try
+		{
+			var response = await Http.GetFromJsonAsync<OptionsResponse>("http://localhost:5043/api/Options/combinations");
+			if (response != null)
+			{
+				Annees = response.Annee;
+				Semestres = response.Semestres;
+				Classes = response.Classes;
+				Evaluations = response.Evaluations;
+
+				// Sélection des premières valeurs par défaut si disponibles
+				SelectedAnnee = Annees.FirstOrDefault() ?? string.Empty;
+				SelectedSemestre = Semestres.FirstOrDefault() ?? string.Empty;
+				SelectedClasse = Classes.FirstOrDefault() ?? string.Empty;
+				SelectedEvaluation = Evaluations.FirstOrDefault() ?? string.Empty;
+
+				// Chargement automatique des UEs si une classe et un semestre existent
+
+
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine("Erreur de chargement des options: " + ex.Message);
+		}
+	}
+
+	private async Task Credit()
+	{
+		if (!string.IsNullOrEmpty(SelectedUE) && !string.IsNullOrEmpty(SelectedEvaluation))
+		{
+			try
+			{
+				var url = $"http://localhost:5043/api/Options/credit?ue={SelectedUE}&codeEval={SelectedEvaluation}";
+				var response = await Http.GetFromJsonAsync<int>(url); // Récupère un entier
+				Echelles = response; // Stocke l'entier correctement
+				SelectedEchelle = Echelles;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Erreur de chargement du crédit : " + ex.Message);
+				Echelles = 0; // Valeur par défaut en cas d'erreur
+			}
+		}
+		else
+		{
+			Echelles = 0;
+		}
+	}
+
+	private class OptionsResponse
+	{
+		public List<string> Annee { get; set; } = new();
+		public List<string> Semestres { get; set; } = new();
+		public List<string> Classes { get; set; } = new();
+		public List<string> Evaluations { get; set; } = new();
+	}
+
+	private async Task LoadUEs()
+	{
+		if (!string.IsNullOrEmpty(SelectedClasse) && !string.IsNullOrEmpty(SelectedSemestre))
+		{
+			try
+			{
+				var url = $"http://localhost:5043/api/Options/ues?semestre={SelectedSemestre}&codeClasse={SelectedClasse}";
+				var responses = await Http.GetFromJsonAsync<List<string>>(url);
+				UEs = responses ?? new List<string>();
+				SelectedUE = responses?.FirstOrDefault() ?? string.Empty; ;
+				await Credit();
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Erreur de chargement des UEs: " + ex.Message);
+				UEs = new List<string>();
+			}
+		}
+		else
+		{
+			UEs.Clear();
+		}
+	}
+	private async Task OnClasseChanged(ChangeEventArgs e)
+	{
+		SelectedClasse = e.Value?.ToString();
+		await LoadUEs();
+		await Credit();
+	}
+
+	private async Task OnSemestreChanged(ChangeEventArgs e)
+	{
+		SelectedSemestre = e.Value?.ToString();
+		await LoadUEs();
+		await Credit();
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			hasRendered = true;
+			await LoadData();
+			await Credit();
+			isValid = await AuthService.ValidateTokenAsync();
+			StateHasChanged();
+		}
+	}
+
+	private async Task OnEvaluationChange(ChangeEventArgs e)
+	{
+		SelectedEvaluation = e.Value?.ToString();
+		await Credit();
+	}
+
+	private async Task OnUEChanged(ChangeEventArgs e)
+	{
+		// Récupère la valeur de l'option sélectionnée (l'UE)
+		SelectedUE = e.Value?.ToString();
+		await Credit();
+	}
+
+	private async Task ToggleLockState()
+	{
+		isLocked = !isLocked;
+		lockButtonText = isLocked ? "Déverrouiller" : "Verrouiller";
+
+		if (isLocked)
+		{
+			await LoadNotes(); // Charge les étudiants (les notes dans ce cas) quand l'état est verrouillé
+		}
+	}
+
+	public class InsertNotesRequest
+	{
+		public string? Annee { get; set; }
+		public string? Semestre { get; set; }
+		public string? CodeClasse { get; set; }
+		public string? CodeUE { get; set; }
+		public string? Evaluation { get; set; }
+		public int Echelle { get; set; }
+		public List<EtudiantNoteRequest> ListeEtudiants { get; set; } = new();
+	}
+
+	public class SelectNotesRequest
+	{
+		public string? Annee { get; set; }
+		public string? Semestre { get; set; }
+		public string? CodeClasse { get; set; }
+		public string? CodeUE { get; set; }
+		public string? Evaluation { get; set; }
+		public int Echelle { get; set; }
+	}
+
+	// Modèle pour un étudiant dans la liste
+	public class EtudiantNoteRequest
+	{
+		public string? Matricule { get; set; } // Seulement pour CC et TP
+		public string? NumAnonymat { get; set; } // Seulement pour SN
+		public decimal Note { get; set; }
+		public string? Observation { get; set; }
+	}
+
+
+	private void ExportToExcel()
+	{
+		ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+		using ExcelPackage package = new();
+		var worksheet = package.Workbook.Worksheets.Add("Notes");
+
+		// En-têtes du tableau
+		worksheet.Cells[1, 1].Value = "No";
+		int col = 2;
+		if (SelectedEvaluation == "SN")
+		{
+			worksheet.Cells[1, col++].Value = "Numéro Anonymat";
+		}
+		else
+		{
+			worksheet.Cells[1, col++].Value = "Matricule";
+			worksheet.Cells[1, col++].Value = "Nom & Prénom";
+		}
+		worksheet.Cells[1, col++].Value = "Note";
+		worksheet.Cells[1, col].Value = "Observation";
+
+		// Remplissage des données
+		int row = 2;
+		int index = 1;
+		if (notes != null)
+		{
+			foreach (var note in notes)
+			{
+				col = 1;
+				worksheet.Cells[row, col++].Value = index++;
+				if (SelectedEvaluation == "SN")
+				{
+					worksheet.Cells[row, col++].Value = note.NumAnonymat;
+				}
+				else
+				{
+					worksheet.Cells[row, col++].Value = note.Matricule;
+					worksheet.Cells[row, col++].Value = note.NomPrenom;
+				}
+				worksheet.Cells[row, col++].Value = note.Note;
+				worksheet.Cells[row, col].Value = note.Observation;
+				row++;
+			}
+		}
+
+
+		// Génération du fichier en mémoire
+		var stream = new MemoryStream();
+		package.SaveAs(stream);
+		stream.Position = 0;
+
+		// Définir un chemin pour le fichier
+		var filePath = Path.Combine(Environment.CurrentDirectory, "Downloads", $"Notes_{SelectedClasse}_{SelectedUE}_{SelectedEvaluation}.xlsx");
+
+		// Créer le répertoire si nécessaire
+		string? directoryPath = Path.GetDirectoryName(filePath);
+		if (!string.IsNullOrEmpty(directoryPath))
+		{
+			Directory.CreateDirectory(directoryPath);
+		}
+
+		// Sauvegarder le fichier sur le disque
+		using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
+		stream.CopyTo(fileStream);
+
+		// Vérification si le fichier a été créé avec succès
+		if (File.Exists(filePath))
+		{
+			Console.WriteLine($"Le fichier a été créé avec succès à l'emplacement : {filePath}");
+
+			try
+			{
+			// Ouvrir l'explorateur de fichiers avec le fichier sélectionné
+				Process.Start(new ProcessStartInfo
+            {
+                FileName = "explorer.exe",
+                Arguments = $"/select,\"{filePath}\"",
+                UseShellExecute = true
+            });
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Erreur lors de l'ouverture de l'explorateur de fichiers : {ex.Message}");
+			}
+		}
+		else
+		{
+			Console.WriteLine("Erreur lors de la création du fichier.");
+		}
+	}
+
+
+	private List<EtudiantNote>? notes = new();
+	private bool isLoading = false;
+	private string errorMessage = "";
+
+
+	private async Task LoadNotes()
+	{
+		isLoading = true;
+		errorMessage = "";
+		notes = null;
+		StateHasChanged();
+
+		try
+		{
+			var parameters = new Dictionary<string, string>
+			{
+				{ "codeUE", SelectedUE ?? string.Empty},
+				{ "evaluation", SelectedEvaluation ?? string.Empty},
+				{ "annee", SelectedAnnee ?? string.Empty},
+				{ "semestre", SelectedSemestre ?? string.Empty},
+				{ "codeClasse", SelectedClasse ?? string.Empty}
+			};
+
+			var queryString = string.Join("&", parameters.Select(p => $"{p.Key}={Uri.EscapeDataString(p.Value)}"));
+			var response = await Http.GetFromJsonAsync<ApiResponse>($"http://localhost:5043/api/Notes/getnotes?{queryString}");
+
+			notes = response?.Notes ?? new List<EtudiantNote>();
+		}
+		catch (Exception)
+		{
+			errorMessage = "Erreur lors du chargement des notes. Vérifiez votre connexion ou contactez l'administrateur.";
+		}
+		finally
+		{
+			isLoading = false;
+		}
+	}
+
+	public class EtudiantNote
+	{
+		public string? Matricule { get; set; }
+		public string? NomPrenom { get; set; }
+		public string? NumAnonymat { get; set; }
+		public double Note { get; set; }
+		public string? Observation { get; set; }
+	}
+
+	public class ApiResponse
+	{
+		public List<EtudiantNote>? Notes { get; set; } = new();
+	}
+
+}

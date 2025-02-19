@@ -1,0 +1,104 @@
+﻿@namespace ProfLayout
+@using Frontend.Services
+@inherits LayoutComponentBase
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<div class="profs-layout">
+    <div class="contain">
+        <main>
+            <div class="top-row px-4 fixed-nav">
+                <img src="logo.png" alt="Logo" class="logo me-2" style="width: 50px; height: 50px;" />
+                <h1 class="h4 me-auto">Import et Saisie Note</h1>
+                <button class="btn btn-link" @onclick="NavigateToHome">
+                    <i class="fas fa-home"></i> Accueil
+                </button>
+                <button class="btn btn-link" @onclick="NavigationToMyAccount">
+                    <i class="fas fa-user"></i> Mon Compte
+                </button>
+                <button class="btn btn-link">
+                    <i class="fas fa-bell"></i> Notifications
+                </button>
+                <button class="btn btn-link" >
+                    <i class="fas fa-language"></i> @localizer["Language"]
+                </button>
+                <button class="btn btn-link" @onclick="Logout">
+                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                </button>
+            </div>
+
+            <div class="">
+                <!-- Sidebar -->
+                <div class="sidebar @(isSidebarOpen ? "active" : "inactive")">
+                    <div class="menu">
+                        <ul class="menu">
+                            <li><a href="/home-prof"><i class="fas fa-home"></i> Accueil</a></li>
+                            <li><a href="/importsaisie"><i class="fas fa-upload"></i> Importer & Saisir</a></li>
+                            <li><a href="/view-prof"><i class="fas fa-eye"></i> Visualiser Notes</a></li>
+                            <li><a href="/parametres"><i class="fas fa-cog"></i> Paramètres</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <button class="btn-toggle-sidebar" @onclick="ToggleSidebar">
+                    <i class="@SidebarIcon"></i>
+                </button>
+                <div class="content @(isSidebarOpen ? "with-sidebar" : "without-sidebar")">
+                    <article class="content px-4">
+                        @Body
+                    </article>
+                </div>
+            </div>
+        </main>
+
+    </div>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 Université de Yaoundé I - Tous droits réservés.</p>
+        <div class="social-icons">
+            <a href="https://facebook.com" target="_blank" class="text-light mx-2">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="https://twitter.com" target="_blank" class="text-light mx-2">
+                <i class="fab fa-twitter"></i>
+            </a>
+            <a href="https://instagram.com" target="_blank" class="text-light mx-2">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://linkedin.com" target="_blank" class="text-light mx-2">
+                <i class="fab fa-linkedin"></i>
+            </a>
+        </div>
+    </footer>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</div>
+
+
+@code {
+    private bool isValid = false;
+    private bool isSidebarOpen = false;
+
+    private string SidebarIcon => isSidebarOpen ? "fas fa-times" : "fas fa-bars";
+
+    private void ToggleSidebar()
+    {
+        isSidebarOpen = !isSidebarOpen;
+        StateHasChanged();
+    }
+    private void NavigationToMyAccount()
+    {
+        Navigation.NavigateTo("/profaccount");
+    }
+    private void NavigateToHome()
+    {
+        Navigation.NavigateTo("/home-prof");
+    }
+    private void Logout()
+    {
+        if (!isValid)
+		{
+			Navigation.NavigateTo("/");
+		}
+	}
+}

@@ -1,0 +1,193 @@
+﻿@page "/profaccount"
+@using System.Globalization
+
+<h3>Mon Compte</h3>
+
+<div class="container">
+    <!-- Informations de l'utilisateur -->
+    <div class="row">
+        <div class="col-md-6">
+            <h5>Informations de l'utilisateur</h5>
+            <div class="mb-3">
+                <label>Nom d'utilisateur :</label>
+                <input class="form-control" @bind="@username" disabled="@isUserInfoEditable" />
+            </div>
+            <div class="mb-3">
+                <label>Prénom :</label>
+                <input class="form-control" @bind="@firstname" disabled="@isUserInfoEditable" />
+            </div>
+            <div class="mb-3">
+                <label>Nom :</label>
+                <input class="form-control" @bind="@lastname" disabled="@isUserInfoEditable" />
+            </div>
+            <div class="mb-3">
+                <label>Titre :</label>
+                <input class="form-control" @bind="@title" disabled="@isUserInfoEditable" />
+            </div>
+            @if (isUserInfoEditable)
+            {
+                <button class="btn btn-primary" @onclick="EnableUserInfoEdit">Modifier</button>
+            }
+            else
+            {
+                <button class="btn btn-success" @onclick="SaveUserInfo">Enregistrer</button>
+            }
+        </div>
+
+        <!-- Informations de contact -->
+        <div class="col-md-6">
+            <h5>Informations de contact</h5>
+            <div class="mb-3">
+                <label>Email :</label>
+                <input class="form-control" @bind="@email" disabled="@isContactInfoEditable" />
+            </div>
+            <div class="mb-3">
+                <label>Téléphone :</label>
+                <input class="form-control" @bind="@phone" disabled="@isContactInfoEditable" />
+            </div>
+            <div class="mb-3">
+                <label>WhatsApp :</label>
+                <input class="form-control" @bind="@whatsapp" disabled="@isContactInfoEditable" />
+            </div>
+            <div class="mb-3">
+                <label>Adresse :</label>
+                <textarea class="form-control" @bind="@address" disabled="@isContactInfoEditable"></textarea>
+            </div>
+            <div class="mb-3">
+                <label>Ville :</label>
+                <input class="form-control" @bind="@city" disabled="@isContactInfoEditable" />
+            </div>
+            <div class="mb-3">
+                <label>État :</label>
+                <input class="form-control" @bind="@state" disabled="@isContactInfoEditable" />
+            </div>
+            <div class="mb-3">
+                <label>Pays :</label>
+                <input class="form-control" @bind="@country" disabled="@isContactInfoEditable" />
+            </div>
+            @if (isContactInfoEditable)
+            {
+                <button class="btn btn-primary" @onclick="EnableContactInfoEdit">Modifier</button>
+            }
+            else
+            {
+                <button class="btn btn-success" @onclick="SaveContactInfo">Enregistrer</button>
+            }
+        </div>
+    </div>
+
+    <!-- Connexions récentes -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h5>Connexions récentes</h5>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Date de connexion</th>
+                        <th>Adresse IP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2025-02-18 14:30:00</td>
+                        <td>192.168.1.1</td>
+                    </tr>
+                    <tr>
+                        <td>2025-02-17 10:15:30</td>
+                        <td>192.168.1.2</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Rôles de l'utilisateur -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h5>Rôles</h5>
+            <ul>
+                <li>Admin</li>
+                <li>Manager</li>
+            </ul>
+            <button class="btn btn-outline-primary">Gérer les rôles</button>
+        </div>
+
+        <!-- Permissions -->
+        <div class="col-md-6">
+            <h5>Permissions</h5>
+            <ul>
+                <li>Accès aux paramètres</li>
+                <li>Accès aux rapports</li>
+            </ul>
+            <button class="btn btn-outline-primary">Gérer les permissions</button>
+        </div>
+    </div>
+
+    <!-- Abonnement et statut -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h5>Abonnement et statut</h5>
+            <p>Abonnement actuel : <strong>Premium</strong></p>
+            <p>Statut du locataire : <strong>Actif</strong></p>
+            <button class="btn btn-outline-primary">Gérer l'abonnement</button>
+        </div>
+    </div>
+
+    <!-- Sécurité -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h5>Sécurité</h5>
+            <button class="btn btn-danger me-2">Supprimer mon compte</button>
+            <button class="btn btn-secondary">Déconnexion</button>
+        </div>
+    </div>
+
+    <!-- Support -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h5>Support</h5>
+            <p>Besoin d'aide ? Contactez notre support.</p>
+            <button class="btn btn-info">Contactez le support</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string username = "User123";
+    private string firstname = "John";
+    private string lastname = "Doe";
+    private string title = "Mr.";
+    private string email = "john.doe@example.com";
+    private string phone = "+1234567890";
+    private string whatsapp = "+1234567890";
+    private string address = "123 Main St";
+    private string city = "Paris";
+    private string state = "Île-de-France";
+    private string country = "France";
+
+    private bool isUserInfoEditable = true;
+    private bool isContactInfoEditable = true;
+
+    private void EnableUserInfoEdit()
+    {
+        isUserInfoEditable = false;
+    }
+
+    private void SaveUserInfo()
+    {
+        isUserInfoEditable = true;
+        // Logic for saving the information can be added here
+    }
+
+    private void EnableContactInfoEdit()
+    {
+        isContactInfoEditable = false;
+    }
+
+    private void SaveContactInfo()
+    {
+        isContactInfoEditable = true;
+        // Logic for saving the contact information can be added here
+    }
+}
+

@@ -1,0 +1,116 @@
+﻿@namespace Importation.Components.Modals
+
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+@if (Visible)
+{
+    <div class="modal fade show" style="display:block;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@localizer["Login"]</h5>
+                    <button type="button" class="close" @onclick="Close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="form-group">
+                            <label for="username">@localizer["UsernameOrEmail"]</label>
+                            <InputText id="username" class="form-control" @bind-Value="loginModel.Username" required placeholder="@localizer["UsernameOrEmailMes"]" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">@localizer["Password"]</label>
+                            <InputText id="password" class="form-control" type="password" @bind-Value="loginModel.Password" required placeholder="@localizer["PasswordMes"]" />
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger">
+                                @errorMessage
+                            </div>
+                        }
+
+                        <div class="form-group">
+                            <small>
+                                <button type="button" class="btn btn-link p-0">@localizer["PasswordForgot"]</button>
+                            </small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">@localizer["Login"]</button>
+                    </EditForm>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Close">@localizer["Cancel"]</button>
+                    <p>@localizer["NotAccount"]</p><button type="button" class="btn btn-link" @onclick="SignUpRedirect">@localizer["Sign Up"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback OnSignUp { get; set; }
+
+    private LoginModel loginModel = new LoginModel();
+    private string? errorMessage;
+
+    private void Close() => OnClose.InvokeAsync(null);
+
+    private void SignUpRedirect() => OnSignUp.InvokeAsync(null);
+
+    private async Task HandleLogin()
+    {
+        var response = await Http.PostAsJsonAsync("http://localhost:5043/api/auth/login", loginModel);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<TokenResponse>();
+
+            // Stockez le token et le rôle dans le localStorage
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", result?.Token);
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "userRole", result?.Role);
+
+            // Fermer la fenêtre modale
+            Close();
+
+            // Redirigez en fonction du rôle
+            if (result?.Role == "Admin")
+            {
+                Navigation.NavigateTo("/home-admin");
+            }
+            else if (result?.Role == "Prof")
+            {
+                Navigation.NavigateTo("/home-prof");
+            }
+            else if (result?.Role == "Stud")
+            {
+                Navigation.NavigateTo("/home-stud"); // Par défaut, redirigez vers la page d'accueil
+            }
+        }
+        else
+        {
+            errorMessage = "Nom d'utilisateur ou mot de passe incorrect.";
+        }
+    }
+
+    public class LoginModel
+    {
+        public string? Username { get; set; }
+        public string? Password { get; set; }
+    }
+        
+    public class TokenResponse
+    {
+        public string? Token { get; set; }
+        public string? Role { get; set; }
+    }
+}

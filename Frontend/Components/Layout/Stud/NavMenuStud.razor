@@ -1,0 +1,139 @@
+﻿<nav class="flex-column">
+    <div class="top-row ps-3 navbar navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="">TP1</a>
+        </div>
+    </div>
+
+    
+    <div class="nav-item px-3">
+        <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
+            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+        </NavLink>
+    </div>
+
+    
+    <div class="nav-item px-3">
+        <a href="/cours" class="nav-link" @onclick="ToggleMenu">
+            <span class="bi bi-book-fill" aria-hidden="true"></span> Cours
+        </a>
+
+        @if (isCoursMenuOpen)
+        {
+            <div class="sub-menu">
+                <div class="nav-item px-3">
+                    <a href="/chapitre1" class="nav-link" @onclick="() => ToggleSubMenu(1)">
+                        <span class="bi bi-journal-text" aria-hidden="true"></span> Chapitre 1 : Introduction à .NET
+                    </a>
+                    @if (openChapitre == 1)
+                    {
+                        <div class="sub-menu">
+                            <NavLink class="nav-link" href="/chapitre1#titre1">
+                                <span class="bi bi-bookmark" aria-hidden="true"></span> 1.1 Découvrir l’historique de .NET
+                            </NavLink>
+                            <NavLink class="nav-link" href="/chapitre1#titre2">
+                                <span class="bi bi-bookmark" aria-hidden="true"></span> 1.2 Utiliser .NET pour différents types de projet
+                            </NavLink>
+                            <NavLink class="nav-link" href="/chapitre1#titre3">
+                                <span class="bi bi-bookmark" aria-hidden="true"></span> 1.3 Quels sont les langages disponibles ?
+                            </NavLink>
+                            <NavLink class="nav-link" href="/chapitre1#titre4">
+                                <span class="bi bi-bookmark" aria-hidden="true"></span> 1.4 Présentation de Visual Studio
+                            </NavLink>
+                        </div>
+                    }
+                </div>
+
+                <div class="nav-item px-3">
+                    <a href="/chapitre2" class="nav-link" @onclick="() => ToggleSubMenu(2)">
+                        <span class="bi bi-journal-text" aria-hidden="true"></span> Chapitre 2 : Application Console
+                    </a>
+                    @if (openChapitre == 2)
+                    {
+                        <div class="sub-menu">
+                            <NavLink class="nav-link" href="/chapitre2#titre1">
+                                <span class="bi bi-bookmark" aria-hidden="true"></span> 1.1	Créer un projet « Console App »
+                            </NavLink>
+                            <NavLink class="nav-link" href="/chapitre2#titre2">
+                                <span class="bi bi-bookmark" aria-hidden="true"></span> 1.2	Analyser l’environnement de développement et du code généré
+                            </NavLink>
+                            <NavLink class="nav-link" href="/chapitre2#titre3">
+                                <span class="bi bi-bookmark" aria-hidden="true"></span> 1.3	Ecrire du texte dans notre application
+                            </NavLink>
+                            <NavLink class="nav-link" href="/chapitre2#titre4">
+                                <span class="bi bi-bookmark" aria-hidden="true"></span> 1.4	L’exécution du projet
+                            </NavLink>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</nav>
+
+@code {
+    private bool isCoursMenuOpen = false;
+    private int openChapitre = -1;
+
+    void ToggleMenu()
+    {
+        isCoursMenuOpen = !isCoursMenuOpen;
+        openChapitre = -1;
+    }
+
+    void ToggleSubMenu(int chapitreId)
+    {
+        if (openChapitre == chapitreId)
+        {
+            openChapitre = -1;
+        }
+        else
+        {
+            openChapitre = chapitreId;
+        }
+    }
+}
+
+<style>
+    .nav-link {
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+        display: block;
+    }
+
+    
+    .sub-menu {
+        padding-left: 20px;
+        display: block;
+    }
+
+        
+        .sub-menu .nav-link {
+            padding-left: 20px; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis;
+        }
+
+   
+    .navbar {
+        display: flex;
+        flex-direction: column; 
+        width: 100%; 
+    }
+
+   
+    .sub-menu {
+        width: 100%;
+    }
+
+   
+    .nav-item {
+        white-space: nowrap; 
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+
+</style>

@@ -1,0 +1,63 @@
+﻿@page "/home-stud"
+@using StudLayout
+@layout StudLayout
+@using Frontend.Services
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<div @onmousemove="OnMouseMove">
+
+    @if (isValid)
+    {
+
+        <PageTitle>Accueil - Gestion des Notes</PageTitle>
+
+        <div class="layout">
+
+            <!-- Contenu principal -->
+            <div class="content">
+                <div class="container mt-5">
+                    <h1 class="text-center display-4 font-weight-bold title-primary">
+                        Bienvenue dans l'application de Gestion des Notes
+                    </h1>
+                    <p class="text-center lead text-muted subtitle">
+                        Gérez vos notes facilement et efficacement.
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+@code {
+    private bool isValid = false;
+    private bool hasRendered = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            hasRendered = true;
+            await CheckToken();
+            StateHasChanged();
+        }
+    }
+
+    private async Task CheckToken()
+    {
+        isValid = await AuthService.ValidateTokenAsync();
+        if (!isValid)
+        {
+            Navigation.NavigateTo("/");
+        }
+    }
+
+    private async Task OnMouseMove(MouseEventArgs e)
+    {
+        if (hasRendered) // S'assure que le rendu initial est terminé
+        {
+            await CheckToken();
+        }
+    }
+}

@@ -1,0 +1,147 @@
+﻿/* Style général de la page d'accueil */
+body {
+    font-family: Arial, sans-serif;
+    background-color: beige;
+    color: #002147;
+}
+
+/* Container principal */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Titre principal */
+.title-primary {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #003366;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+/* Section des cartes */
+.note-card {
+    border-radius: 12px;
+    border: 2px solid #FFD700; /* Bordure dorée */
+    background-color: #FFFFFF;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+    height: 200px; /* Taille fixe des cartes */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+    .note-card:hover {
+        transform: translateY(-5px); /* Effet de survol */
+    }
+
+.card-body {
+    padding: 25px;
+    flex-grow: 1; /* Permet de remplir l'espace disponible dans la carte */
+}
+
+/* Titre des cartes */
+.note-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #003366;
+    margin-bottom: 15px;
+}
+
+/* Description dans les cartes */
+.note-description {
+    font-size: 1rem;
+    color: #5a5a5a;
+    flex-grow: 2;
+}
+
+/* Section texte centrale */
+.text-center h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #e74c3c; /* Couleur rouge accent pour attirer l'attention */
+}
+
+/* Boutons principaux */
+.btn-primary {
+    background-color: #002147;
+    color: #FFFFFF;
+    border: 1px solid #FFD700;
+    padding: 12px 30px;
+    border-radius: 6px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+    .btn-primary:hover {
+        background-color: #FFD700;
+        color: #002147;
+        transform: scale(1.05);
+    }
+
+/* Boutons secondaires */
+.btn-secondary {
+    background-color: #CCCCCC;
+    border: none;
+    color: #002147;
+    padding: 12px 30px;
+    border-radius: 6px;
+    transition: background-color 0.3s;
+}
+
+    .btn-secondary:hover {
+        background-color: #AAAAAA;
+        color: #FFFFFF;
+    }
+
+/* Espacement des cartes */
+.row {
+    margin-top: 40px;
+}
+
+/* Espacement autour des cartes */
+.col-md-4 {
+    margin-bottom: 30px;
+}
+
+/* Ombre légère des cartes */
+.card-body {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Section Commencer */
+.section-commencer {
+    text-align: center;
+    margin-top: 60px;
+    padding: 30px;
+}
+
+    .section-commencer p {
+        font-size: 1.2rem;
+        color: #5a5a5a;
+        font-weight: 500;
+    }
+
+.note-card {
+    border-radius: 10px;
+    overflow: hidden; /* Empêche le débordement de l'image */
+    transition: transform 0.2s ease-in-out;
+}
+
+    .note-card:hover {
+        transform: scale(1.02);
+    }
+
+.card-body {
+    padding: 15px;
+}
+
+.card-img-top {
+    width: 100px; /* Ajuste la taille selon tes besoins */
+    height: 100px;
+    object-fit: contain; /* Ajuste l'image sans la déformer */
+    display: block;
+    margin: 10px auto; /* Centre l'image */
+}

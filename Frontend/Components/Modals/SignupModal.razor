@@ -1,0 +1,127 @@
+﻿@namespace Importation.Components.Modals
+
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+@if (Visible)
+{
+    <div class="modal fade show" style="display:block;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@localizer["Sign Up"]</h5>
+                    <button type="button" class="close" @onclick="Close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="@registerModel" OnValidSubmit="HandleRegister">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="form-group">
+                            <label for="firstname">@localizer["Firstname"]</label>
+                            <InputText id="firstname" class="form-control" @bind-Value="registerModel.Firstname" required placeholder="@localizer["FirstnameMes"]" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lastname">@localizer["Lastname"]</label>
+                            <InputText id="lastname" class="form-control" @bind-Value="registerModel.Lastname" required placeholder="@localizer["LastnameMes"]" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="username">@localizer["Username"]</label>
+                            <InputText id="username" class="form-control" @bind-Value="registerModel.Username" required placeholder="@localizer["UsernameMes"]" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">@localizer["Password"]</label>
+                            <InputText id="password" class="form-control" type="password" @bind-Value="registerModel.Password" required placeholder="@localizer["PasswordMes"]" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword">@localizer["PasswordConfirm"]</label>
+                            <InputText id="confirmPassword" class="form-control" type="password" @bind-Value="registerModel.ConfirmPassword" required placeholder="@localizer["PasswordConfirmMes"]" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="role">@localizer["Role"]</label>
+                            <InputSelect id="role" class="form-control" @bind-Value="registerModel.Role" required>
+                                <option value="Admin">@localizer["Admin"]</option>
+                                <option value="Prof">@localizer["Prof"]</option>
+                                <option value="Stud">@localizer["Student"]</option>
+                            </InputSelect>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger">
+                                @errorMessage
+                            </div>
+                        }
+
+                        <button type="submit" class="btn btn-primary">@localizer["Sign Up"]</button>
+                    </EditForm>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Close">@localizer["Cancel"]</button>
+                    <p>@localizer["AlreadyAccount"]</p><button type="button" class="btn btn-link" @onclick="RedirectExistingAccount">@localizer["Login"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback OnExistingAccount { get; set; }
+
+    private RegisterModel registerModel = new RegisterModel
+        {
+            Role = "Stud" // Définir une valeur par défaut pour Role
+        };
+
+    private string? errorMessage;
+
+    private void Close() => OnClose.InvokeAsync(null);
+
+    private void RedirectExistingAccount() => OnExistingAccount.InvokeAsync(null);
+
+    private async Task HandleRegister()
+    {
+        // Appel API pour enregistrer l'utilisateur
+        var response = await Http.PostAsJsonAsync("http://localhost:5043/api/auth/register", registerModel);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<ApiResponse>();
+
+            // Appeler le callback pour afficher le modal de connexionawait RedirectExistingAccount(); 
+            RedirectExistingAccount();
+        }
+        else
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            errorMessage = error; // Afficher l'erreur
+        }
+    }
+
+    public class RegisterModel
+    {
+        public int TenantId { get; set; } = 1; // Définir tenantId par défaut
+        public string Firstname { get; set; }
+        public string Lastname { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string ConfirmPassword { get; set; }
+        public string Role { get; set; } = "Stud"; // Rôle par défaut
+        public int? AssignedBy { get; set; } = 1; // Assigner à l'admin par défaut
+    }
+
+    public class ApiResponse
+    {
+        public string Message { get; set; }
+    }
+}

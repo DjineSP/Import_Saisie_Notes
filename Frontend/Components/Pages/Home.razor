@@ -1,0 +1,74 @@
+﻿@using Importation.Components.Modals
+
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@page "/"
+
+
+<PageTitle>Accueil - Gestion des Notes</PageTitle>
+
+<div class="container mt-5">
+    <h1 class="text-center display-4 font-weight-bold title-primary">@localizer["WelcomeMessage"]</h1>
+    <p class="text-center lead text-muted subtitle">@localizer["TextMes1"]</p>
+
+    <div class="row mt-4">
+        <div class="col-md-4 mb-4">
+            <div class="note-card border-primary shadow-sm" @onclick="() => showLoginModal = true">
+                <div class="card-body text-center">
+                    <h5 class="note-title title-primary">@localizer["CardTitleh1"]</h5>
+                    <p class="note-description">@localizer["CardTexth1"]</p>
+                    <img src="excel.png" alt="Saisie de Notes" class="card-img-top" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="note-card border-primary shadow-sm" @onclick="() => showLoginModal = true">
+                <div class="card-body">
+                    <h5 class="note-title title-primary">@localizer["CardTitleh2"]</h5>
+                    <p class="note-description">@localizer["CardTexth2"]</p>
+                    <img src="keybord.jpg" alt="Saisie de Notes" class="card-img-top" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="note-card border-primary shadow-sm" @onclick="() => showLoginModal = true">
+                <div class="card-body text-center">
+                    <h5 class="note-title title-primary">@localizer["CardTitleh3"]</h5>
+                    <p class="note-description">@localizer["CardTexth3"]</p>
+                    <img src="lock.png" alt="Saisie de Notes" class="card-img-top" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <h2 class="title-danger">@localizer["ReadyToStart"]</h2>
+        <p>
+            <button class="btn btn-primary btn-lg shadow-sm" @onclick="() => showLoginModal = true">@localizer["Login"]</button>
+            <button class="btn btn-secondary btn-lg shadow-sm ms-3" @onclick="() => showSignupModal = true">@localizer["Sign Up"]</button>
+        </p>
+    </div>
+</div>
+
+<LoginModal Visible="showLoginModal" OnClose="CloseLoginModal" OnSignUp="ShowSignupModal" />
+<SignupModal Visible="showSignupModal" OnClose="CloseSignupModal" OnExistingAccount="ShowLoginModal" />
+
+@code {
+    private bool showLoginModal;
+    private bool showSignupModal;
+
+    private void CloseLoginModal() => showLoginModal = false;
+    private void CloseSignupModal() => showSignupModal = false;
+
+    private void ShowSignupModal()
+    {
+        showLoginModal = false; // Ferme le modal de connexion
+        showSignupModal = true; // Ouvre le modal d'inscription
+    }
+
+    private void ShowLoginModal()
+    {
+        showSignupModal = false; // Ferme le modal d'inscription
+        showLoginModal = true; // Ouvre le modal de connexion
+    }
+}
