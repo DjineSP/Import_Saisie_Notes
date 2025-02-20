@@ -6,6 +6,9 @@
 @using OfficeOpenXml;
 @inject HttpClient Http
 @using Microsoft.AspNetCore.Components.Forms;
+@using Newtonsoft.Json;
+@using System.Text
+
 
 
 <div @onmousemove="OnMouseMove">
@@ -444,9 +447,7 @@
 
 	private void SaveNote()
 	{
-		int index = notes.FindIndex(n => n.Matricule == selectedNote.Matricule || n.NumAnonymat == selectedNote.NumAnonymat);
-
-
+		index = notes.FindIndex(n => n.Matricule == selectedNote.Matricule || n.NumAnonymat == selectedNote.NumAnonymat);
 		// Appliquer les modifications à la note sélectionnée dans la liste
 		if (selectedNote != null)
 		{
@@ -606,6 +607,8 @@
 		StateHasChanged();
 	}
 
+	int index;
+
 	private EtudiantNote selectedNote = new EtudiantNote();
 	private bool isEditing = false;
 
@@ -630,27 +633,51 @@
 		isEditing = true;
 	}
 
+	
 
-	//Quand on clique sur modifier devant une note:
-	private void UpdateNote()
+	private async Task InsertIntoBD()
 	{
-		var noteToUpdate = notes.FirstOrDefault(n =>
-			SelectedEvaluation == "SN" ? n.NumAnonymat == selectedNote.NumAnonymat
-												: n.Matricule == selectedNote.Matricule);
-
-		if (noteToUpdate != null)
+		try
 		{
-			noteToUpdate.Note = selectedNote.Note;
-			noteToUpdate.Observation = selectedNote.Observation;
-			isEditing = false;
-			StateHasChanged();
+			// Créer l'objet de requête
+			var noteRequest = new InsertNotesRequest
+				{
+					Annee = SelectedAnnee,
+					Semestre = SelectedSemestre,
+					CodeClasse = SelectedClasse,
+					CodeUE = SelectedUE,
+					Evaluation = SelectedEvaluation,
+					Echelle = SelectedEchelle ?? 0, // Valeur par défaut à remplacer selon le contexte
+					ListeEtudiants = notes
+				};
+
+			// Sérialiser l'objet en JSON
+			var json = JsonConvert.SerializeObject(noteRequest);
+			var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+			// Envoi de la requête HTTP POST
+			var response = await Http.PostAsync("http://localhost:5043/api/Notes/insertnotes", content);
+
+			// Vérifier la réponse
+			if (response.IsSuccessStatusCode)
+			{
+				Console.WriteLine("Notes insérées avec succès.");
+			}
+			else
+			{
+				// Si la réponse n'est pas un succès, afficher un message d'erreur
+				var errorContent = await response.Content.ReadAsStringAsync();
+				Console.WriteLine($"Erreur lors de l'insertion des notes : {errorContent}");
+			}
+		}
+		catch (Exception ex)
+		{
+			// Gérer les exceptions et afficher l'erreur
+			Console.WriteLine($"Une exception est survenue : {ex.Message}");
 		}
 	}
 
-	private void InsertIntoBD()
-	{
 
-	}
 
 	private List<Dictionary<string, object>> notesList = new();
 
