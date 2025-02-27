@@ -7,640 +7,712 @@
 @inject HttpClient Http
 @using Microsoft.AspNetCore.Components.Forms;
 @using Newtonsoft.Json;
-@using System.Text
-
+@using System.Text;
+@inject NavigationManager Navigation
 
 
 <div @onmousemove="OnMouseMove">
 
-	@if (isValid)
-	{
-		<div>
-			<h3 class="table-title">Options</h3>
-			<div class="d-flex justify-content-between align-items-center bg-light p-3 mb-3">
-				<div class="form-group mx-2">
-					<label for="annee">Année :</label>
-					<select id="annee" class="form-control" @bind="SelectedAnnee" disabled="@((!Annees.Any())||isLocked)">
-						@foreach (var annee in Annees)
-						{
-							<option value="@annee">@annee</option>
-						}
-					</select>
-				</div>
+    @if (isValid)
+    {
+        <div>
+            <h3 class="table-title">@localizer["Options"]</h3>
+            <div class="d-flex justify-content-between align-items-center bg-light p-3 mb-3">
+                <div class="form-group mx-2">
+                    <label for="annee">@localizer["Year"] :</label>
+                    <select id="annee" class="form-control" @bind="SelectedAnnee" disabled="@((!Annees.Any())||isLocked)">
+                        @foreach (var annee in Annees)
+                        {
+                            <option value="@annee">@annee</option>
+                        }
+                    </select>
+                </div>
 
-				<div class="form-group mx-2">
-					<label for="classe">Classe :</label>
-					<select id="classe" class="form-control" @onchange="OnClasseChanged" disabled="@((!Classes.Any())||isLocked)">
-						@foreach (var classe in Classes)
-						{
-							<option value="@classe">@classe</option>
-						}
-					</select>
-				</div>
+                <div class="form-group mx-2">
+                    <label for="classe">@localizer["Class"] :</label>
+                    <select id="classe" class="form-control" @onchange="OnClasseChanged" disabled="@((!Classes.Any())||isLocked)">
+                        @foreach (var classe in Classes)
+                        {
+                            <option value="@classe">@classe</option>
+                        }
+                    </select>
+                </div>
 
-				<div class="form-group mx-2">
-					<label for="semestre">Semestre :</label>
-					<select id="semestre" class="form-control" @onchange="OnSemestreChanged" disabled="@((!Semestres.Any())||isLocked)">
-						@foreach (var semestre in Semestres)
-						{
-							<option value="@semestre">@semestre</option>
-						}
-					</select>
-				</div>
+                <div class="form-group mx-2">
+                    <label for="semestre">@localizer["Semester"] :</label>
+                    <select id="semestre" class="form-control" @onchange="OnSemestreChanged" disabled="@((!Semestres.Any())||isLocked)">
+                        @foreach (var semestre in Semestres)
+                        {
+                            <option value="@semestre">@semestre</option>
+                        }
+                    </select>
+                </div>
 
-				<div class="form-group mx-2">
-					<label for="ue">UE :</label>
-					<select id="ue" class="form-control" @onchange="OnUEChanged" disabled="@((!UEs.Any())||isLocked)">
-						@foreach (var ue in UEs)
-						{
-							<option value="@ue">@ue</option>
-						}
-					</select>
-				</div>
+                <div class="form-group mx-2">
+                    <label for="ue">UE :</label>
+                    <select id="ue" class="form-control" @onchange="OnUEChanged" disabled="@((!UEs.Any())||isLocked)">
+                        @foreach (var ue in UEs)
+                        {
+                            <option value="@ue">@ue</option>
+                        }
+                    </select>
+                </div>
 
 
-				<div class="form-group mx-2">
-					<label for="evaluation">Évaluation :</label>
-					<select id="evaluation" class="form-control" @onchange="OnEvaluationChange" disabled="@((!Evaluations.Any())||isLocked)">
-						@foreach (var eval in Evaluations)
-						{
-							<option value="@eval">@eval</option>
-						}
-					</select>
-				</div>
+                <div class="form-group mx-2">
+                    <label for="evaluation">@localizer["Evaluation"] :</label>
+                    <select id="evaluation" class="form-control" @onchange="OnEvaluationChange" disabled="@((!Evaluations.Any())||isLocked)">
+                        @foreach (var eval in Evaluations)
+                        {
+                            <option value="@eval">@eval</option>
+                        }
+                    </select>
+                </div>
 
-				<div class="form-group mx-2">
-					<label for="echelle">Échelle :</label>
-					<select id="echelle" class="form-control" @onchange="OnEchelle" disabled="@((Echelles != 0)||isLocked)">
-						@if (Echelles == 0)
-						{
-							@for (int i = 10; i <= 100; i += 10)
-							{
-								<option value="@i">@i</option>
-							}
-						}
-						else
-						{
-							<option value="@Echelles">@Echelles</option>
-						}
-					</select>
-				</div>
-			</div>
+                <div class="form-group mx-2">
+                    <label for="echelle">@localizer["Scale"] :</label>
+                    <select id="echelle" class="form-control" @onchange="OnEchelle" disabled="@((Echelles != 0)||isLocked)">
+                        @if (Echelles == 0)
+                        {
+                            @for (int i = 10; i <= 100; i += 10)
+                            {
+                                <option value="@i">@i</option>
+                            }
+                        }
+                        else
+                        {
+                            <option value="@Echelles">@Echelles</option>
+                        }
+                    </select>
+                </div>
+            </div>
 
-			<!-- Bouton Verrouiller / Déverrouiller -->
-			<button type="button" class="btn btn-primary mb-3" @onclick="ToggleLockState">@lockButtonText</button>
+            <!-- Bouton Verrouiller / Déverrouiller -->
+            <button type="button" class="btn btn-primary mb-3" @onclick="ToggleLockState">@lockButtonText</button>
 
-			<h3 class="table-title">Importer depuis un fichier excel</h3>
-			<div class="d-flex justify-content-between align-items-center bg-light p-3 mb-3">
-				<div class="form-group mx-2">
-					<InputFile OnChange="UploadFile" class="form-control" accept=".xls,.xlsx" disabled="@(!isLocked)"/>
-				</div>
-				<div class="form-group mx-2">
-					<button class="btn btn-primary" @onclick="LoadNotesTest" disabled="@(!isLocked)">Charger</button>
-				</div>
-			</div>
+            <h3 class="table-title">@localizer["ImportFromExcelFile"]</h3>
+            <div class="d-flex justify-content-between align-items-center bg-light p-3 mb-3">
+                <div class="form-group mx-2">
+                    <InputFile OnChange="UploadFile" class="form-control" accept=".xls,.xlsx" disabled="@(!isLocked)"/>
+                </div>
+                <div class="form-group mx-2">
+                    <button class="btn btn-primary" @onclick="LoadNotesTest" disabled="@(!isLocked)">Charger</button>
+                </div>
+            </div>
 
-			@if (!string.IsNullOrEmpty(importMessage))
-			{
-				<div class="alert alert-info mt-2">@importMessage</div>
-			}
-			<!-- Affichage de la saisie selon l'évaluation -->
-			@if (SelectedEvaluation == "SN")
-			{
-				<h3 class="table-title">Saisir manuellement</h3>
-				<div class="d-flex justify-content-between align-items-center bg-light p-3 mb-3">
-					<div class="form-group mx-2">
-						<label for="NumAnonymat">NumAnonymat</label>
-						<input type="text" class="form-control mx-2" placeholder="NumAnonymat" @bind="numAnonymat" disabled="@(!isLocked)" />
-					</div>
-					<div class="form-group mx-2">
-						<label for="Note">Note</label>
-						<input type="text" class="form-control mx-2" placeholder="Note" @bind="note" disabled="@(!isLocked)" />
-					</div>
-					<div class="form-group mx-2">
-						<label for="Observation">Observation</label>
-						<input type="text" class="form-control mx-2" placeholder="Observation" @bind="observation" disabled="@(!isLocked)" />
-					</div>
-					<div class="form-group mx-2">
-						@if (isEditing)
-						{
-							<button type="button" class="btn btn-success mt-2" @onclick="SaveNote">Enregistrer</button>
-							<button type="button" class="btn btn-secondary mt-2" @onclick="CancelEdit">Annuler</button>
-						}
-						else
-						{
-							<button type="button" class="btn btn-primary mt-2" @onclick="InsertNote" disabled="@(!isLocked)">Insérer</button>
-						}
-					</div>
-				</div>
+            @if (!string.IsNullOrEmpty(importMessage))
+            {
+                <div class="alert alert-info mt-2">@importMessage</div>
+            }
+            <!-- Affichage de la saisie selon l'évaluation -->
+            @if (SelectedEvaluation == "SN")
+            {
+                <h3 class="table-title">Saisir manuellement</h3>
+                <div class="d-flex justify-content-between align-items-center bg-light p-3 mb-3">
+                    <div class="form-group mx-2">
+                        <label for="NumAnonymat">NumAnonymat</label>
+                        <input type="text" class="form-control mx-2" placeholder="NumAnonymat" @bind="numAnonymat" disabled="@(!isLocked)" />
+                    </div>
+                    <div class="form-group mx-2">
+                        <label for="Note">Note</label>
+                        <input type="text" class="form-control mx-2" placeholder="Note" @bind="note" disabled="@(!isLocked)" />
+                    </div>
+                    <div class="form-group mx-2">
+                        <label for="Observation">Observation</label>
+                        <input type="text" class="form-control mx-2" placeholder="Observation" @bind="observation" disabled="@(!isLocked)" />
+                    </div>
+                    <div class="form-group mx-2">
+                        @if (isEditing)
+                        {
+                            <button type="button" class="btn btn-success mt-2" @onclick="SaveNote">Enregistrer</button>
+                            <button type="button" class="btn btn-secondary mt-2" @onclick="CancelEdit">Annuler</button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-primary mt-2" @onclick="InsertNote" disabled="@(!isLocked)">Insérer</button>
+                        }
+                    </div>
+                </div>
 
-				@if (!string.IsNullOrEmpty(insertnoteMessage))
-				{
-					<div class="alert alert-info mt-2">@insertnoteMessage</div>
-				}
-			}
-			else
-			{
-				<h3 class="table-title">Saisir manuellement</h3>
-				<div class="d-flex justify-content-between align-items-center bg-light p-3 mb-3">
-					<div class="form-group mx-2">
-						<label for="Matricule">Matricule</label>
-						<input type="text" class="form-control mx-2" placeholder="Matricule" @bind="matricule" disabled="@(!isLocked)" />
-					</div>
-					<div class="form-group mx-2">
-						<label for="Non">Nom et Prenoms</label>
-						<input type="text" class="form-control mx-2" placeholder="Nom et Prenoms" @bind="nomPrenom" disabled="@(!isLocked)" />
-					</div>
-					<div class="form-group mx-2">
-						<label for="Note">Note</label>
-						<input type="text" class="form-control mx-2" placeholder="Note" @bind="note" disabled="@(!isLocked)" />
-					</div>
-					<div class="form-group mx-2">
-						<label for="Observation">Observation</label>
-						<input type="text" class="form-control mx-2" placeholder="Observation" @bind="observation" disabled="@(!isLocked)" />
-					</div>
-					<div class="form-group mx-2">
-						@if (isEditing)
-						{
-							<button type="button" class="btn btn-success mt-2" @onclick="SaveNote">Enregistrer</button>
-							<button type="button" class="btn btn-secondary mt-2" @onclick="CancelEdit">Annuler</button>
-						}
-						else
-						{
-							<button type="button" class="btn btn-primary mt-2" @onclick="InsertNote" disabled="@(!isLocked)">Insérer</button>
-						}
-					</div>
-				</div>
-				@if (!string.IsNullOrEmpty(insertnoteMessage))
-				{
-					<div class="alert alert-info mt-2">@insertnoteMessage</div>
-				}
-			}
+                @if (!string.IsNullOrEmpty(insertnoteMessage))
+                {
+                    <div class="alert alert-info mt-2">@insertnoteMessage</div>
+                }
+            }
+            else
+            {
+                <h3 class="table-title">Saisir manuellement</h3>
+                <div class="d-flex justify-content-between align-items-center bg-light p-3 mb-3">
+                    <div class="form-group mx-2">
+                        <label for="Matricule">Matricule</label>
+                        <input type="text" class="form-control mx-2" placeholder="Matricule"
+                        @onchange="OnMatriculeChanged" disabled="@(!isLocked)" />
+                    </div>
 
-			@if (isLoading)
-			{
-				<p>Chargement des notes...</p>
-			}
-			else if (notes.Count == 0)
-			{
-				<p class="text-warning">Aucune note trouvée.</p>
-			}
-			else
-			{
-				if (!string.IsNullOrEmpty(errorMessage))
-				{
-					<p class="text-danger">@errorMessage</p>
-				}
-				@if (SelectedEvaluation == "SN")
-				{
-					<h3 class="table-title">Liste des Notes avec anonymats</h3>
-				}
-				else
-				{
-					<h3 class="table-title">Liste des Notes sans anonymats</h3>
-				}
+                    <div class="form-group mx-2">
+                        <label for="Nom">Nom et Prénoms</label>
+                        <input type="text" class="form-control mx-2" placeholder="Nom et Prénoms"
+                        @bind="nomPrenom" disabled="@(!isLocked)" />
+                    </div>
+                    <div class="form-group mx-2">
+                        <label for="Note">Note</label>
+                        <input type="text" class="form-control mx-2" placeholder="Note" @bind="note" disabled="@(!isLocked)" />
+                    </div>
+                    <div class="form-group mx-2">
+                        <label for="Observation">Observation</label>
+                        <input type="text" class="form-control mx-2" placeholder="Observation" @bind="observation" disabled="@(!isLocked)" />
+                    </div>
+                    <div class="form-group mx-2">
+                        @if (isEditing)
+                        {
+                            <button type="button" class="btn btn-success mt-2" @onclick="SaveNote">Enregistrer</button>
+                            <button type="button" class="btn btn-secondary mt-2" @onclick="CancelEdit">Annuler</button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-primary mt-2" @onclick="InsertNote" disabled="@(!isLocked)">Insérer</button>
+                        }
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(insertnoteMessage))
+                {
+                    <div class="alert alert-info mt-2">@insertnoteMessage</div>
+                }
+            }
 
-				<table class="professional-table mt-3">
-					<thead>
-						<tr>
-							<th class="table-header">No</th>
-							@if (SelectedEvaluation == "SN")
-							{
-								<th class="table-header">Numéro Anonymat</th>
-							}
-							else
-							{
-								<th class="table-header">Matricule</th>
-								<th class="table-header">Nom & Prénom</th>
-							}
-							<th class="table-header">Note</th>
-							<th class="table-header">Observation</th>
-							<th class="table-header">Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						@{
-							int index = 1;
-						}
-						@foreach (var note in notes)
-						{
-							<tr>
-								<td class="table-data">@index</td>
-								@if (SelectedEvaluation == "SN")
-								{
-									<td class="table-data">@note.NumAnonymat</td>
-								}
-								else
-								{
-									<td class="table-data">@note.Matricule</td>
-									<td class="table-data">@note.NomPrenom</td>
-								}
-								<td class="table-data">@note.Note</td>
-								<td class="table-data">@note.Observation</td>
-								<td>
-									<button class="btn btn-success btn-sm" @onclick="() => EditNote(note)">Modifier</button>
-									<button class="btn btn-danger btn-sm" @onclick="() => DeleteNote(note)">Supprimer</button>
-								</td>
-							</tr>
-							index++;
-						}
-					</tbody>
-				</table>
-			}
-			<!-- Bouton de validation -->
-			<button class="btn btn-success mt-3" @onclick="InsertIntoBD">Valider</button>
-		</div>
-	}
+            @if (isLoading)
+            {
+                <p>Chargement des notes...</p>
+            }
+            else if (notes.Count == 0)
+            {
+                <p class="text-warning">Aucune note trouvée.</p>
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <p class="text-danger">@errorMessage</p>
+                }
+                @if (SelectedEvaluation == "SN")
+                {
+                    <h3 class="table-title">Liste des Notes avec anonymats</h3>
+                }
+                else
+                {
+                    <h3 class="table-title">Liste des Notes sans anonymats</h3>
+                }
+
+                <table class="professional-table mt-3">
+                    <thead>
+                        <tr>
+                            <th class="table-header">No</th>
+                            @if (SelectedEvaluation == "SN")
+                            {
+                                <th class="table-header">Numéro Anonymat</th>
+                            }
+                            else
+                            {
+                                <th class="table-header">Matricule</th>
+                                <th class="table-header">Nom & Prénom</th>
+                            }
+                            <th class="table-header">Note</th>
+                            <th class="table-header">Observation</th>
+                            <th class="table-header">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int index = 1;
+                        }
+                        @foreach (var note in notes)
+                        {
+                            <tr>
+                                <td class="table-data">@index</td>
+                                @if (SelectedEvaluation == "SN")
+                                {
+                                    <td class="table-data">@note.NumAnonymat</td>
+                                }
+                                else
+                                {
+                                    <td class="table-data">@note.Matricule</td>
+                                    <td class="table-data">@note.NomPrenom</td>
+                                }
+                                <td class="table-data">@note.Note</td>
+                                <td class="table-data">@note.Observation</td>
+                                <td>
+                                    <button class="btn btn-success btn-sm" @onclick="() => EditNote(note)">Modifier</button>
+                                    <button class="btn btn-danger btn-sm" @onclick="() => DeleteNote(note)">Supprimer</button>
+                                </td>
+                            </tr>
+                            index++;
+                        }
+                    </tbody>
+                </table>
+            }
+            <!-- Bouton de validation -->
+            <button class="btn btn-success mt-3" @onclick="InsertIntoBD">Valider</button>
+            @if (!string.IsNullOrEmpty(insertMessage))
+            {
+                <div class="alert alert-info mt-2">@insertMessage</div>
+            }
+        </div>
+    }
 </div>
 
 
 @code {
 
-	private bool isValid = false;
-	private bool isLocked = false;
-	private string lockButtonText = "Verrouiller";
-	private bool hasRendered = false;
+    private bool isValid = false;
+    private bool insertok = false;
+    private bool isLocked = false;
+    private string lockButtonText = "";
+    private bool hasRendered = false;
 
-	[Parameter] public EventCallback<string> OnSelectionChanged { get; set; }
+    [Parameter] public EventCallback<string> OnSelectionChanged { get; set; }
 
-	private List<string> Annees = new();
-	private List<string> Semestres = new();
-	private List<string> Classes = new();
-	private List<string> UEs = new();
-	private List<string> Evaluations = new();
-	private int Echelles ;
+    private List<string> Annees = new();
+    private List<string> Semestres = new();
+    private List<string> Classes = new();
+    private List<string> UEs = new();
+    private List<string> Evaluations = new();
+    private int Echelles ;
 
-	private string? SelectedAnnee = "";
-	private string? SelectedSemestre = "";
-	private string? SelectedClasse = "";
-	private string? SelectedUE = "";
-	private string? SelectedEvaluation = "";
-	private int? SelectedEchelle;
+    private string? SelectedAnnee = "";
+    private string? SelectedSemestre = "";
+    private string? SelectedClasse = "";
+    private string? SelectedUE = "";
+    private string? SelectedEvaluation = "";
+    private int? SelectedEchelle;
 
-	//Les variables pour la section de saisi des notes:
-	private IBrowserFile? selectedFile = null;
-	private string importMessage = "";
-	private string matricule = "";
-	private string nomPrenom = "";
-	private string numAnonymat = "";
-	private double note = 0;
-	private string observation = "";
-	private string insertnoteMessage = "";
+    //Les variables pour la section de saisi des notes:
+    private IBrowserFile? selectedFile = null;
+    private string importMessage = "";
+    private string matricule = "";
+    private string newMatricule = "";
+    private string nomPrenom = "";
+    private string numAnonymat = "";
+    private double note = 0;
+    private string observation = "";
+    private string insertnoteMessage = "";
+    private string insertMessage = "";
 
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadData();
-	}
+    private List<EtudiantNote> notes = new();
+    private bool isLoading = false;
+    private string errorMessage = "";
 
-	//A chaque rafraichissement, recharger les donnees
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if (firstRender)
-		{
-			hasRendered = true;
-			await LoadData();
-			await Credit();
-			isValid = await AuthService.ValidateTokenAsync();
-			StateHasChanged();
-		}
-	}
+    private async Task LoadEtudiant()
+    {
+        var etudiant = await Http.GetFromJsonAsync<Etudiant>($"http://localhost:5043/api/Etudiants/{newMatricule}");
+        nomPrenom = "";
+        if(etudiant != null){
+            nomPrenom = $"{etudiant.Nom} {etudiant.Prenoms}";
+        }        
+    }
 
+    public class Etudiant
+    {
+        public string Matricule { get; set; } = "";
+        public string Nom { get; set; } = "";
+        public string Prenoms { get; set; } = "";
+        public string Sexe { get; set; } = "";
+        public string DateNaissance { get; set; } = "";
+        public string VilleNaissance { get; set; } = "";
+    }
 
-	//Verifier que le token est valide a chaque mouvement de la souris
-	private async Task OnMouseMove(MouseEventArgs e)
-	{
-		if (hasRendered) // S'assure que le rendu initial est terminé
-		{
-			await CheckToken();
-		}
-	}
-
-
-	//Verifier la validite du token
-	private async Task CheckToken()
-	{
-		isValid = await AuthService.ValidateTokenAsync();
-	}
-
-	//Charger les autres donnees en fonction de la classe choisi choisi (UEs)
-	private async Task OnClasseChanged(ChangeEventArgs e)
-	{
-		SelectedClasse = e.Value?.ToString();
-		await LoadUEs();
-		await Credit();
-	}
-
-	//Charger les autres donnees en fonction du semestre choisi (Credit et UEs)
-	private async Task OnSemestreChanged(ChangeEventArgs e)
-	{
-		SelectedSemestre = e.Value?.ToString();
-		await LoadUEs();
-		await Credit();
-	}
-
-	//Charger les autres donnees en fonction de l'UE choisi (Credit)
-	private async Task OnUEChanged(ChangeEventArgs e)
-	{
-		// Récupère la valeur de l'option sélectionnée (l'UE)
-		SelectedUE = e.Value?.ToString();
-		await Credit();
-	}
-	private int? Echellesss;
-	private void OnEchelle(ChangeEventArgs e)
-	{
-		Echellesss = Convert.ToInt32(e.Value); if (int.TryParse(e.Value?.ToString(), out int selectedValue))
-		{
-		}
-	}
-
-	//Charger les autres donnees en fonction du type d'evaluation choisi (Credit)
-	private async Task OnEvaluationChange(ChangeEventArgs e)
-	{
-		SelectedEvaluation = e.Value?.ToString();
-		await Credit();
-	}
-
-	private async Task ToggleLockState()
-	{
-		isLocked = !isLocked;
-		lockButtonText = isLocked ? "Déverrouiller" : "Verrouiller";
-		SelectedEchelle = Echellesss;
-		if (isLocked)
-		{
-			await LoadNotes(); // Charge les étudiants (les notes dans ce cas) quand l'état est verrouillé
-		}
-	}
-
-	private void UploadFile(InputFileChangeEventArgs e)
-	{
-		selectedFile = e.File;
-	}
+    private async Task OnMatriculeChanged(ChangeEventArgs e)
+    {
+        matricule = e.Value?.ToString();
+        newMatricule = matricule;
+        await LoadEtudiant();
+    }
 
 
-	private List<EtudiantNote> ReadExcel(Stream stream)
-	{
-		ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-		var notesList = new List<EtudiantNote>();
-		using var package = new OfficeOpenXml.ExcelPackage(stream);
-		var worksheet = package.Workbook.Worksheets[0];
-		int rowCount = worksheet.Dimension.Rows;
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+        lockButtonText = localizer["Lock"];
+    }
 
-		Console.WriteLine($"Lecture du fichier Excel avec {rowCount} lignes.");
-
-		for (int row = 2; row <= rowCount; row++) // Ignorer la première ligne (en-têtes)
-		{
-			if (SelectedEvaluation == "SN")
-			{
-				notesList.Add(new EtudiantNote
-					{
-						NumAnonymat = worksheet.Cells[row, 2].Text.Trim(),
-						Note = double.TryParse(worksheet.Cells[row, 3].Text, out double note) ? note : 0,
-						Observation = worksheet.Cells[row, 4].Text.Trim()
-					});
-			}
-			else
-			{
-				notesList.Add(new EtudiantNote
-					{
-						Matricule = worksheet.Cells[row, 2].Text.Trim(),
-						NomPrenom = worksheet.Cells[row, 3].Text.Trim(),
-						Note = double.TryParse(worksheet.Cells[row, 4].Text, out double note) ? note : 0,
-						Observation = worksheet.Cells[row, 5].Text.Trim()
-					});
-			}
-		}
-
-		return notesList;
-	}
-
-	private async void LoadNotesTest()
-	{
-		var file = selectedFile;
-		if (file != null)
-		{
-			isLoading = true;
-			errorMessage = "";
-			notes = new List<EtudiantNote>();
-			StateHasChanged(); // Mettre à jour l'interface pour afficher le message de chargement
-
-			try
-			{
-				using var stream = file.OpenReadStream(10 * 1024 * 1024); // Limite de 10MB
-				using var memoryStream = new MemoryStream();
-				await stream.CopyToAsync(memoryStream);
-				memoryStream.Position = 0;
-				notes = ReadExcel(memoryStream);
-				Console.WriteLine($"Fichier téléchargé et {notes.Count} notes lues.");
-			}
-			catch (Exception ex)
-			{
-				errorMessage = $"Erreur lors de la lecture du fichier: {ex.Message}";
-				Console.WriteLine($"Erreur lors de la lecture du fichier: {ex.Message}");
-			}
-			finally
-			{
-				isLoading = false;
-				StateHasChanged(); // Mettre à jour l'interface après le chargement
-			}
-		}
-	}
-
-	private void SaveNote()
-	{
-		index = notes.FindIndex(n => n.Matricule == selectedNote.Matricule || n.NumAnonymat == selectedNote.NumAnonymat);
-		// Appliquer les modifications à la note sélectionnée dans la liste
-		if (selectedNote != null)
-		{
-			notes[index].Matricule = matricule;
-			notes[index].NomPrenom = nomPrenom;
-			notes[index].NumAnonymat = numAnonymat;
-			notes[index].Note = note;
-			notes[index].Observation = observation;
-		}
-
-		CancelEdit();
-	}
-	private void CancelEdit()
-	{
-		// Réinitialiser les champs avec les valeurs de la note initiale
-		matricule = string.Empty;
-		nomPrenom = string.Empty;
-		numAnonymat = string.Empty;
-		note = 0;
-		observation = string.Empty;
-		isEditing = false;
-	}
-
-	private void DeleteNote(EtudiantNote note)
-	{
-		notes.Remove(note);
-		StateHasChanged();
-	}
-
-	private async Task LoadUEs()
-	{
-		if (!string.IsNullOrEmpty(SelectedClasse) && !string.IsNullOrEmpty(SelectedSemestre))
-		{
-			try
-			{
-				var url = $"http://localhost:5043/api/Options/ues?semestre={SelectedSemestre}&codeClasse={SelectedClasse}";
-				var responses = await Http.GetFromJsonAsync<List<string>>(url);
-				UEs = responses ?? new List<string>();
-				SelectedUE = responses?.FirstOrDefault();
-				await Credit();
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine("Erreur de chargement des UEs: " + ex.Message);
-				UEs = new List<string>();
-			}
-		}
-		else
-		{
-			UEs.Clear();
-		}
-	}
-
-	private async Task LoadData()
-	{
-		try
-		{
-			var response = await Http.GetFromJsonAsync<OptionsResponse>("http://localhost:5043/api/Options/combinations");
-			if (response != null)
-			{
-				Annees = response.Annee;
-				Semestres = response.Semestres;
-				Classes = response.Classes;
-				Evaluations = response.Evaluations;
-
-				// Sélection des premières valeurs par défaut si disponibles
-				SelectedAnnee = Annees.FirstOrDefault();
-				SelectedSemestre = Semestres.FirstOrDefault();
-				SelectedClasse = Classes.FirstOrDefault();
-				SelectedEvaluation = Evaluations.FirstOrDefault();
-
-				// Chargement automatique des UEs si une classe et un semestre existent
+    //A chaque rafraichissement, recharger les donnees
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            hasRendered = true;
+            await LoadData();
+            await Credit();
+            isValid = await AuthService.ValidateTokenAsync();
+            StateHasChanged();
+        }
+    }
 
 
-
-			}
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine("Erreur de chargement des options: " + ex.Message);
-		}
-	}
-
-	private async Task Credit()
-	{
-		if (!string.IsNullOrEmpty(SelectedUE) && !string.IsNullOrEmpty(SelectedEvaluation))
-		{
-			try
-			{
-				var url = $"http://localhost:5043/api/Options/credit?ue={SelectedUE}&codeEval={SelectedEvaluation}";
-				var response = await Http.GetFromJsonAsync<int>(url); // Récupère un entier
-				Echelles = response; // Stocke l'entier correctement
-				SelectedEchelle = Echelles;
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine("Erreur de chargement du crédit : " + ex.Message);
-				Echelles = 0; // Valeur par défaut en cas d'erreur
-			}
-		}
-		else
-		{
-			Echelles = 0;
-		}
-	}
-	private void InsertNote()
-	{
-		if (SelectedEvaluation == "SN")
-		{
-			if (string.IsNullOrEmpty(numAnonymat) || note < 0){
-				insertnoteMessage = "Veuillez entrer un Numero d'anonymat";
-				return;
-			}
+    //Verifier que le token est valide a chaque mouvement de la souris
+    private async Task OnMouseMove(MouseEventArgs e)
+    {
+        if (hasRendered) // S'assure que le rendu initial est terminé
+        {
+            await CheckToken();
+        }
+    }
 
 
-			if (note < 0 || note > SelectedEchelle)
-			{
-				insertnoteMessage = "La note doit etre comprise entre 0 et " + SelectedEchelle + " .";
-				return;
-			}
+    //Verifier la validite du token
+    private async Task CheckToken()
+    {
+        isValid = await AuthService.ValidateTokenAsync();
+    }
 
-			notes.Add(new EtudiantNote
+    //Charger les autres donnees en fonction de la classe choisi choisi (UEs)
+    private async Task OnClasseChanged(ChangeEventArgs e)
+    {
+        SelectedClasse = e.Value?.ToString();
+        await LoadUEs();
+        await Credit();
+    }
+
+    //Charger les autres donnees en fonction du semestre choisi (Credit et UEs)
+    private async Task OnSemestreChanged(ChangeEventArgs e)
+    {
+        SelectedSemestre = e.Value?.ToString();
+        await LoadUEs();
+        await Credit();
+    }
+
+    //Charger les autres donnees en fonction de l'UE choisi (Credit)
+    private async Task OnUEChanged(ChangeEventArgs e)
+    {
+        // Récupère la valeur de l'option sélectionnée (l'UE)
+        SelectedUE = e.Value?.ToString();
+        await Credit();
+    }
+    private int? Echellesss;
+    private void OnEchelle(ChangeEventArgs e)
+    {
+        Echellesss = Convert.ToInt32(e.Value); if (int.TryParse(e.Value?.ToString(), out int selectedValue))
+        {
+        }
+    }
+
+    //Charger les autres donnees en fonction du type d'evaluation choisi (Credit)
+    private async Task OnEvaluationChange(ChangeEventArgs e)
+    {
+        SelectedEvaluation = e.Value?.ToString();
+        await Credit();
+    }
+
+    private async Task ToggleLockState()
+    {
+        isLocked = !isLocked;
+        lockButtonText = isLocked ? localizer["Unlock"] : localizer["Lock"];
+        SelectedEchelle = Echellesss;
+        if (isLocked)
+        {
+            await LoadNotes(); // Charge les étudiants (les notes dans ce cas) quand l'état est verrouillé
+        }
+    }
+
+    private void UploadFile(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+
+
+    private void ReadExcel(Stream stream)
+    {
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        using var package = new OfficeOpenXml.ExcelPackage(stream);
+        var worksheet = package.Workbook.Worksheets[0];
+        int rowCount = worksheet.Dimension.Rows;
+
+        Console.WriteLine($"Lecture du fichier Excel avec {rowCount} lignes.");
+
+        for (int row = 2; row <= rowCount; row++) // Ignorer la première ligne (en-têtes)
+        {
+            bool isValid = true;
+            string matricule = worksheet.Cells[row, 2].Text.Trim();
+            string nomPrenom = worksheet.Cells[row, 3].Text.Trim();
+            string noteStr = worksheet.Cells[row, SelectedEvaluation == "SN" ? 3 : 4].Text;
+            string observation = worksheet.Cells[row, SelectedEvaluation == "SN" ? 4 : 5].Text.Trim();
+
+            // Validation du matricule
+            if (string.IsNullOrEmpty(matricule) || !System.Text.RegularExpressions.Regex.IsMatch(matricule, @"^\d{2}[A-Z]\d{4}$"))
+            {
+                Console.WriteLine($"Erreur à la ligne {row}: Le matricule '{matricule}' n'est pas valide.");
+                isValid = false;
+            }
+
+            // Validation de la note
+            if (!double.TryParse(noteStr, out double note) || note < 0 || note > 20)
+            {
+                Console.WriteLine($"Erreur à la ligne {row}: La note '{noteStr}' n'est pas valide. Elle doit être entre 0 et 20.");
+                isValid = false;
+            }
+
+            // Validation de l'observation
+            if (string.IsNullOrEmpty(observation))
+            {
+                Console.WriteLine($"Erreur à la ligne {row}: L'observation est manquante.");
+                isValid = false;
+            }
+
+            // Si aucune erreur n'est trouvée, on ajoute la note
+            if (isValid)
+            {
+                if (SelectedEvaluation == "SN")
+                {
+                    notes.Add(new EtudiantNote
+                        {
+                            NumAnonymat = matricule,
+                            Note = note,
+                            Observation = observation
+                        });
+                }
+                else
+                {
+                    notes.Add(new EtudiantNote
+                        {
+                            Matricule = matricule,
+                            NomPrenom = nomPrenom,
+                            Note = note,
+                            Observation = observation
+                        });
+                }
+            }
+        }
+    }
+
+
+    private async void LoadNotesTest()
+    {
+        var file = selectedFile;
+        if (file != null)
+        {
+            isLoading = true;
+            errorMessage = "";
+            notes = new List<EtudiantNote>();
+            StateHasChanged(); // Mettre à jour l'interface pour afficher le message de chargement
+
+            try
+            {
+                using var stream = file.OpenReadStream(10 * 1024 * 1024); // Limite de 10MB
+                using var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+                memoryStream.Position = 0;
+                ReadExcel(memoryStream);
+                Console.WriteLine($"Fichier téléchargé et {notes.Count} notes lues.");
+            }
+            catch (Exception ex)
+            {
+                errorMessage = $"Erreur lors de la lecture du fichier: {ex.Message}";
+                Console.WriteLine($"Erreur lors de la lecture du fichier: {ex.Message}");
+            }
+            finally
+            {
+                isLoading = false;
+                StateHasChanged(); // Mettre à jour l'interface après le chargement
+            }
+        }
+    }
+
+    private void SaveNote()
+    {
+        if (index >= 0)
+        {
+            notes[index].Matricule = matricule;
+            notes[index].NomPrenom = nomPrenom;
+            notes[index].NumAnonymat = numAnonymat;
+            notes[index].Note = note;
+            notes[index].Observation = observation;
+            Console.WriteLine(index);
+        }
+
+        CancelEdit();
+    }
+    private void CancelEdit()
+    {
+        // Réinitialiser les champs avec les valeurs de la note initiale
+        matricule = string.Empty;
+        nomPrenom = string.Empty;
+        numAnonymat = string.Empty;
+        note = 0;
+        observation = string.Empty;
+        isEditing = false;
+    }
+
+    private void DeleteNote(EtudiantNote note)
+    {
+        notes.Remove(note);
+        StateHasChanged();
+    }
+
+    private async Task LoadUEs()
+    {
+        if (!string.IsNullOrEmpty(SelectedClasse) && !string.IsNullOrEmpty(SelectedSemestre))
+        {
+            try
+            {
+                var url = $"http://localhost:5043/api/Options/ues?semestre={SelectedSemestre}&codeClasse={SelectedClasse}";
+                var responses = await Http.GetFromJsonAsync<List<string>>(url);
+                UEs = responses ?? new List<string>();
+                SelectedUE = responses?.FirstOrDefault();
+                await Credit();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur de chargement des UEs: " + ex.Message);
+                UEs = new List<string>();
+            }
+        }
+        else
+        {
+            UEs.Clear();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            var response = await Http.GetFromJsonAsync<OptionsResponse>("http://localhost:5043/api/Options/combinations");
+            if (response != null)
+            {
+                Annees = response.Annee;
+                Semestres = response.Semestres;
+                Classes = response.Classes;
+                Evaluations = response.Evaluations;
+
+                // Sélection des premières valeurs par défaut si disponibles
+                SelectedAnnee = Annees.FirstOrDefault();
+                SelectedSemestre = Semestres.FirstOrDefault();
+                SelectedClasse = Classes.FirstOrDefault();
+                SelectedEvaluation = Evaluations.FirstOrDefault();
+
+                // Chargement automatique des UEs si une classe et un semestre existent
+
+
+
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Erreur de chargement des options: " + ex.Message);
+        }
+    }
+
+    private async Task Credit()
+    {
+        if (!string.IsNullOrEmpty(SelectedUE) && !string.IsNullOrEmpty(SelectedEvaluation))
+        {
+            try
+            {
+                var url = $"http://localhost:5043/api/Options/credit?ue={SelectedUE}&codeEval={SelectedEvaluation}";
+                var response = await Http.GetFromJsonAsync<int>(url); // Récupère un entier
+                Echelles = response; // Stocke l'entier correctement
+                SelectedEchelle = Echelles;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur de chargement du crédit : " + ex.Message);
+                Echelles = 0; // Valeur par défaut en cas d'erreur
+            }
+        }
+        else
+        {
+            Echelles = 0;
+        }
+    }
+    private void InsertNote()
+    {
+        if (SelectedEvaluation == "SN")
+        {
+            if (string.IsNullOrEmpty(numAnonymat) || note < 0){
+                insertnoteMessage = "Veuillez entrer un Numero d'anonymat";
+                return;
+            }
+
+
+            if (note < 0 || note > SelectedEchelle)
+            {
+                insertnoteMessage = "La note doit etre comprise entre 0 et " + SelectedEchelle + " .";
+                return;
+            }
+
+            notes.Add(new EtudiantNote
 				{
 					NumAnonymat = numAnonymat,
 					Note = note,
 					Observation = observation
 				});
-		}
-		else
-		{
-			if (string.IsNullOrEmpty(matricule) || string.IsNullOrEmpty(nomPrenom) || note < 0)
-				return;
+        }
+        else
+        {
+            if (string.IsNullOrEmpty(matricule) || string.IsNullOrEmpty(nomPrenom) || note < 0)
+                return;
 
-			if (!System.Text.RegularExpressions.Regex.IsMatch(matricule, @"^\d{2}[A-Z]\d{4}$"))
-			{
-				insertnoteMessage = "Le matricule doit être au format 00X0000 (ex: 12A3456).";
-				return;
-			}
+            if (!System.Text.RegularExpressions.Regex.IsMatch(matricule, @"^\d{2}[A-Z]\d{4}$"))
+            {
+                insertnoteMessage = "Le matricule doit être au format 00X0000 (ex: 12A3456).";
+                return;
+            }
 
-			if (note < 0 || note > SelectedEchelle)
-			{
-				insertnoteMessage = "La note doit etre comprise entre 0 et " + SelectedEchelle + " .";
-				return;
-			}
+            if (note < 0 || note > SelectedEchelle)
+            {
+                insertnoteMessage = "La note doit etre comprise entre 0 et " + SelectedEchelle + " .";
+                return;
+            }
 
-			notes.Add(new EtudiantNote
+            notes.Add(new EtudiantNote
 				{
 					Matricule = matricule,
 					NomPrenom = nomPrenom,
 					Note = note,
 					Observation = observation
 				});
-		}
+        }
 
-		matricule = nomPrenom = numAnonymat = observation = insertnoteMessage = string.Empty;
-		note = 0;
-		StateHasChanged();
-	}
+        matricule = nomPrenom = numAnonymat = observation = insertnoteMessage = string.Empty;
+        note = 0;
+        StateHasChanged();
+    }
 
-	int index;
+    int index;
 
-	private EtudiantNote selectedNote = new EtudiantNote();
-	private bool isEditing = false;
+    private EtudiantNote selectedNote = new EtudiantNote();
+    private bool isEditing = false;
 
-	private void EditNote(EtudiantNote notes)
-	{
-		selectedNote = new EtudiantNote
+    private void EditNote(EtudiantNote noteToEdit)
+    {
+        selectedNote = new EtudiantNote
 			{
-				Matricule = notes.Matricule,
-				NomPrenom = notes.NomPrenom,
-				NumAnonymat = notes.NumAnonymat,
-				Note = notes.Note,
-				Observation = notes.Observation
+				Matricule = noteToEdit.Matricule,
+				NomPrenom = noteToEdit.NomPrenom,
+				NumAnonymat = noteToEdit.NumAnonymat,
+				Note = noteToEdit.Note,
+				Observation = noteToEdit.Observation
 			};
 
-		// Charger les informations dans les champs
-		matricule = selectedNote.Matricule ?? string.Empty;
-		numAnonymat = selectedNote.NumAnonymat ?? string.Empty;
-		note = selectedNote.Note;
-		nomPrenom = selectedNote.NomPrenom ?? string.Empty;
-		observation = selectedNote.Observation ?? string.Empty;
+        // Charger les informations dans les champs
+        matricule = selectedNote.Matricule ?? string.Empty;
+        numAnonymat = selectedNote.NumAnonymat ?? string.Empty;
+        note = selectedNote.Note;
+        nomPrenom = selectedNote.NomPrenom ?? string.Empty;
+        observation = selectedNote.Observation ?? string.Empty;
 
-		isEditing = true;
-	}
+        index = notes.FindIndex(n => n.Matricule == matricule || n.NumAnonymat == numAnonymat);
 
-	
+        isEditing = true;
+    }
 
-	private async Task InsertIntoBD()
-	{
-		try
-		{
-			// Créer l'objet de requête
-			var noteRequest = new InsertNotesRequest
+
+
+    private async Task InsertIntoBD()
+    {
+        try
+        {
+            // Créer l'objet de requête
+            var noteRequest = new InsertNotesRequest
 				{
 					Annee = SelectedAnnee,
 					Semestre = SelectedSemestre,
@@ -651,29 +723,29 @@
 					ListeEtudiants = notes
 				};
 
-			// Sérialiser l'objet en JSON
-			var json = JsonConvert.SerializeObject(noteRequest);
-			var content = new StringContent(json, Encoding.UTF8, "application/json");
+            // Sérialiser l'objet en JSON
+            var json = JsonConvert.SerializeObject(noteRequest);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-			// Envoi de la requête HTTP POST
-			var response = await Http.PostAsync("http://localhost:5043/api/Notes/insertnotes", content);
+            // Envoi de la requête HTTP POST
+            var response = await Http.PostAsync("http://localhost:5043/api/Notes/insertnotes", content);
 
-			// Vérifier la réponse
-			if (response.IsSuccessStatusCode)
-			{
-				Console.WriteLine("Notes insérées avec succès.");
-			}
-			else
-			{
-				// Si la réponse n'est pas un succès, afficher un message d'erreur
-				var errorContent = await response.Content.ReadAsStringAsync();
-				Console.WriteLine($"Erreur lors de l'insertion des notes : {errorContent}");
-			}
+            // Vérifier la réponse
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Notes insérées avec succès.");
+            }
+            else
+            {
+                // Si la réponse n'est pas un succès, afficher un message d'erreur
+                var errorContent = await response.Content.ReadAsStringAsync();
+                insertMessage = $"Erreur lors de l'insertion des notes : {errorContent}";
+            }
 		}
 		catch (Exception ex)
 		{
 			// Gérer les exceptions et afficher l'erreur
-			Console.WriteLine($"Une exception est survenue : {ex.Message}");
+			insertMessage = "Une exception est survenue : " + ex.Message;
 		}
 	}
 
@@ -685,10 +757,6 @@
 	{
 		selectedFile = e.File;
 	}
-
-	private List<EtudiantNote> notes = new();
-	private bool isLoading = false;
-	private string errorMessage = "";
 
 	private async Task LoadNotes()
 	{
@@ -712,7 +780,20 @@
 			var queryString = string.Join("&", parameters.Select(p => $"{p.Key}={Uri.EscapeDataString(p.Value)}"));
 			var response = await Http.GetFromJsonAsync<ApiResponse>($"http://localhost:5043/api/Notes/getnotes?{queryString}");
 
-			notes = response?.Notes ?? new List<EtudiantNote>();
+			if (response?.Notes != null)
+			{
+				foreach (var note in response.Notes)
+				{
+					notes.Add(new EtudiantNote
+						{
+							Matricule = note.Matricule,
+							NumAnonymat = note.NumAnonymat,
+							NomPrenom = note.NomPrenom,
+							Note = note.Note,
+							Observation = note.Observation
+						});
+				}
+			}
 		}
 		catch (Exception)
 		{

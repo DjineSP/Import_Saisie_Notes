@@ -228,4 +228,61 @@
   <data name="ReadyToStart" xml:space="preserve">
     <value>Ready to Get Started?</value>
   </data>
+  <data name="MyAccount" xml:space="preserve">
+    <value>My Account</value>
+  </data>
+  <data name="Notifications" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="ImportType" xml:space="preserve">
+    <value>Import &amp; Type</value>
+  </data>
+  <data name="ViewNote" xml:space="preserve">
+    <value>View Grades</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="CardTitlehp1" xml:space="preserve">
+    <value>Importing and Entering Grades</value>
+  </data>
+  <data name="CardTitlehp2" xml:space="preserve">
+    <value>Viewing and Downloading Grades</value>
+  </data>
+  <data name="CardTexthp1" xml:space="preserve">
+    <value>Ajoutez vos grades rapidement et sans effort.</value>
+  </data>
+  <data name="CardTexthp2" xml:space="preserve">
+    <value>View and download grades easily.</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="Class" xml:space="preserve">
+    <value>Class</value>
+  </data>
+  <data name="Semester" xml:space="preserve">
+    <value>Semester</value>
+  </data>
+  <data name="Evaluation" xml:space="preserve">
+    <value>Evaluation</value>
+  </data>
+  <data name="Scale" xml:space="preserve">
+    <value>Scale</value>
+  </data>
+  <data name="Lock" xml:space="preserve">
+    <value>Lock</value>
+  </data>
+  <data name="Unlock" xml:space="preserve">
+    <value>Unlock</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="ImportFromExcelFile" xml:space="preserve">
+    <value>Import from an excel file</value>
+  </data>
 </root>

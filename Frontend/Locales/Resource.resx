@@ -228,4 +228,61 @@
   <data name="ReadyToStart" xml:space="preserve">
     <value />
   </data>
+  <data name="MyAccount" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Notifications" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ImportType" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ViewNote" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value />
+  </data>
+  <data name="CardTitlehp1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="CardTitlehp2" xml:space="preserve">
+    <value />
+  </data>
+  <data name="CardTexthp1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="CardTexthp2" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Class" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Semester" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Evaluation" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Scale" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Lock" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Unlock" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ImportFromExcelFile" xml:space="preserve">
+    <value />
+  </data>
 </root>

@@ -10,7 +10,7 @@
     @if (isValid)
     {
 
-        <PageTitle>Accueil - Gestion des Notes</PageTitle>
+        <PageTitle>@localizer["Home"]</PageTitle>
 
         <div class="layout">
 
@@ -18,24 +18,24 @@
             <div class="content">
                 <div class="container mt-5">
                     <h1 class="text-center display-4 font-weight-bold title-primary">
-                        Bienvenue dans l'application de Gestion des Notes
+                        @localizer["WelcomeMessage"]
                     </h1>
                     <p class="text-center lead text-muted subtitle">
-                        Gérez vos notes facilement et efficacement.
+                        @localizer["TextMes1"]
                     </p>
                 </div>
                 <div class="row mt-4">
                     <div class="col-md-6 mb-4">
                         <div class="card card-custom btn-block shadow-lg" @onclick="OnImportAndEnterClick">
-                            <h5 class="card-title">Importation et Saisie des Notes</h5>
-                            <p class="card-description">Ajoutez vos notes rapidement et sans effort.</p>
+                            <h5 class="card-title">@localizer["CardTitlehp1"]</h5>
+                            <p class="card-description">@localizer["CardTexthp1"]</p>
                         </div>
                     </div>
 
                     <div class="col-md-6 mb-4">
                         <div class="card card-custom btn-block shadow-lg" @onclick="OnViewAndDownloadClick">
-                            <h5 class="card-title">Visualisation et Télécharger les Notes</h5>
-                            <p class="card-description">Visualisez et téléchargez les notes facilement.</p>
+                            <h5 class="card-title">@localizer["CardTitlehp2"]</h5>
+                            <p class="card-description">@localizer["CardTexthp2"]</p>
                         </div>
                     </div>
                 </div>

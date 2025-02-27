@@ -228,4 +228,61 @@
   <data name="ReadyToStart" xml:space="preserve">
     <value>Prêt à Commencer?</value>
   </data>
+  <data name="MyAccount" xml:space="preserve">
+    <value>Mon Compte</value>
+  </data>
+  <data name="Notifications" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Déconnexion</value>
+  </data>
+  <data name="ImportType" xml:space="preserve">
+    <value>Importer &amp; Saisir</value>
+  </data>
+  <data name="ViewNote" xml:space="preserve">
+    <value>Visualiser Notes</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Paramètres</value>
+  </data>
+  <data name="CardTitlehp1" xml:space="preserve">
+    <value>Importation et Saisie des Notes</value>
+  </data>
+  <data name="CardTitlehp2" xml:space="preserve">
+    <value>Visualisation et Télécharger les Notes</value>
+  </data>
+  <data name="CardTexthp1" xml:space="preserve">
+    <value>Ajoutez vos notes rapidement et sans effort.</value>
+  </data>
+  <data name="CardTexthp2" xml:space="preserve">
+    <value>Visualisez et téléchargez les notes facilement.</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>Anneé</value>
+  </data>
+  <data name="Class" xml:space="preserve">
+    <value>Classe</value>
+  </data>
+  <data name="Semester" xml:space="preserve">
+    <value>Semestre</value>
+  </data>
+  <data name="Evaluation" xml:space="preserve">
+    <value>Évaluation</value>
+  </data>
+  <data name="Scale" xml:space="preserve">
+    <value>Échelle</value>
+  </data>
+  <data name="Lock" xml:space="preserve">
+    <value>Verrouiller</value>
+  </data>
+  <data name="Unlock" xml:space="preserve">
+    <value>Déverrouiller</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="ImportFromExcelFile" xml:space="preserve">
+    <value>Importer depuis un fichier excel</value>
+  </data>
 </root>

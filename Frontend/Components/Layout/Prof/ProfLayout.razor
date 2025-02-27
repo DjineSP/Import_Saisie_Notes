@@ -3,27 +3,28 @@
 @inherits LayoutComponentBase
 @inject AuthService AuthService
 @inject NavigationManager Navigation
+@using Importation.Components.Modals
 
 <div class="profs-layout">
     <div class="contain">
         <main>
             <div class="top-row px-4 fixed-nav">
                 <img src="logo.png" alt="Logo" class="logo me-2" style="width: 50px; height: 50px;" />
-                <h1 class="h4 me-auto">Import et Saisie Note</h1>
+                <h1 class="h4 me-auto">@localizer["AppName"]</h1>
                 <button class="btn btn-link" @onclick="NavigateToHome">
-                    <i class="fas fa-home"></i> Accueil
+                    <i class="fas fa-home"></i> @localizer["Home"]
                 </button>
                 <button class="btn btn-link" @onclick="NavigationToMyAccount">
-                    <i class="fas fa-user"></i> Mon Compte
+                    <i class="fas fa-user"></i> @localizer["MyAccount"]
                 </button>
                 <button class="btn btn-link">
-                    <i class="fas fa-bell"></i> Notifications
+                    <i class="fas fa-bell"></i> @localizer["Notifications"]
                 </button>
-                <button class="btn btn-link" >
+                <button class="btn btn-link" @onclick="() => showLanguageModal = true">
                     <i class="fas fa-language"></i> @localizer["Language"]
                 </button>
                 <button class="btn btn-link" @onclick="Logout">
-                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                    <i class="fas fa-sign-out-alt"></i> @localizer["Logout"]
                 </button>
             </div>
 
@@ -32,10 +33,10 @@
                 <div class="sidebar @(isSidebarOpen ? "active" : "inactive")">
                     <div class="menu">
                         <ul class="menu">
-                            <li><a href="/home-prof"><i class="fas fa-home"></i> Accueil</a></li>
-                            <li><a href="/importsaisie"><i class="fas fa-upload"></i> Importer & Saisir</a></li>
-                            <li><a href="/view-prof"><i class="fas fa-eye"></i> Visualiser Notes</a></li>
-                            <li><a href="/parametres"><i class="fas fa-cog"></i> Paramètres</a></li>
+                            <li><a href="/home-prof"><i class="fas fa-home"></i> @localizer["Home"]</a></li>
+                            <li><a href="/importsaisie"><i class="fas fa-upload"></i> @localizer["ImportType"]</a></li>
+                            <li><a href="/view-prof"><i class="fas fa-eye"></i> @localizer["ViewNote"]</a></li>
+                            <li><a href="/parametres"><i class="fas fa-cog"></i> @localizer["Settings"]</a></li>
                         </ul>
                     </div>
                 </div>
@@ -55,7 +56,7 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <p>&copy; 2025 Université de Yaoundé I - Tous droits réservés.</p>
+        <p>@localizer["Copyright"]</p>
         <div class="social-icons">
             <a href="https://facebook.com" target="_blank" class="text-light mx-2">
                 <i class="fab fa-facebook-f"></i>
@@ -75,9 +76,17 @@
 </div>
 
 
+<LanguageModal Visible="showLanguageModal" OnClose="CloseLanguageModal" />
+
 @code {
     private bool isValid = false;
     private bool isSidebarOpen = false;
+
+    private bool showLanguageModal;
+
+    private void CloseLanguageModal() => showLanguageModal = false;
+
+
 
     private string SidebarIcon => isSidebarOpen ? "fas fa-times" : "fas fa-bars";
 
